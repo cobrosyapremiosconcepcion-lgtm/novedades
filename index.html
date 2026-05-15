@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instructivos Judiciales — Tucumán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       VARIABLES & RESET
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0d1b2a;
+      --navy2:   #162336;
+      --navy3:   #1e3050;
+      --gold:    #c8a84b;
+      --gold2:   #e8c96a;
+      --cream:   #f5f0e8;
+      --cream2:  #ede7d9;
+      --text:    #1a1a2e;
+      --muted:   #6b7280;
+      --white:   #ffffff;
+
+      --c-judicial: #1a5c8a;
+      --c-protocolo: #2d7a4a;
+      --c-urgente:  #9b2335;
+      --c-admin:    #5a3d8a;
+      --c-default:  #4a6080;
+
+      --radius: 4px;
+      --shadow: 0 4px 24px rgba(13,27,42,.18);
+      --shadow-lg: 0 12px 48px rgba(13,27,42,.30);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    header {
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      padding: 3rem 2rem 2.5rem;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 60px,
+          rgba(200,168,75,.04) 60px,
+          rgba(200,168,75,.04) 61px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 60px,
+          rgba(200,168,75,.04) 60px,
+          rgba(200,168,75,.04) 61px
+        );
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold2), var(--gold), transparent);
+    }
+
+    .header-inner {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .header-seal {
+      width: 72px; height: 72px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: rgba(200,168,75,.08);
+    }
+    .header-seal svg { width: 40px; height: 40px; fill: var(--gold); }
+
+    .header-text { flex: 1; min-width: 240px; }
+
+    .header-eyebrow {
+      font-family: 'Source Serif 4', serif;
+      font-size: .75rem;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .4rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -.01em;
+    }
+
+    h1 span { color: var(--gold2); }
+
+    .header-sub {
+      font-size: .88rem;
+      color: rgba(255,255,255,.5);
+      margin-top: .5rem;
+      font-style: italic;
+    }
+
+    .header-stats {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      margin-top: .5rem;
+    }
+
+    .stat { text-align: center; }
+    .stat-num {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold2);
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+    }
+
+    /* ═══════════════════════════════════════════
+       TOOLBAR
+    ═══════════════════════════════════════════ */
+    .toolbar {
+      background: var(--navy2);
+      border-bottom: 1px solid rgba(200,168,75,.15);
+      padding: 1rem 2rem;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.2);
+    }
+
+    .toolbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+    }
+
+    .search-wrap {
+      position: relative; flex: 1; min-width: 200px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(200,168,75,.2);
+      border-radius: var(--radius);
+      color: var(--white);
+      font-family: 'Source Serif 4', serif;
+      font-size: .9rem;
+      padding: .55rem 1rem .55rem 2.4rem;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,.3); }
+    .search-wrap input:focus {
+      border-color: var(--gold);
+      background: rgba(255,255,255,.1);
+    }
+
+    .search-icon {
+      position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; opacity: .4;
+    }
+
+    .filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+    .filter-btn {
+      padding: .4rem .9rem;
+      border-radius: 2px;
+      border: 1px solid rgba(200,168,75,.25);
+      background: transparent;
+      color: rgba(255,255,255,.55);
+      font-family: 'Source Serif 4', serif;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════
+       MAIN GRID
+    ═══════════════════════════════════════════ */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    .section-header {
+      display: flex; align-items: baseline; gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--cream2);
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .result-count {
+      font-size: .8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       CARD
+    ═══════════════════════════════════════════ */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid rgba(0,0,0,.07);
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      display: flex; flex-direction: column;
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s;
+      animation: cardIn .4s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--cat-color, var(--c-default));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(0,0,0,.12); }
+    .card:hover::before { transform: scaleX(1); }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top {
+      padding: 1.25rem 1.25rem .75rem;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 2px;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: var(--cat-color, var(--c-default));
+      color: #fff;
+    }
+
+    .card-date {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.3;
+      margin-bottom: .6rem;
+    }
+
+    .card-desc {
+      font-size: .85rem;
+      color: #555;
+      line-height: 1.55;
+    }
+
+    .card-footer {
+      padding: .8rem 1.25rem;
+      border-top: 1px solid var(--cream2);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .card-cta {
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      color: var(--cat-color, var(--c-default));
+      display: flex; align-items: center; gap: .35rem;
+    }
+
+    .card-cta svg { width: 13px; height: 13px; transition: transform .2s; }
+    .card:hover .card-cta svg { transform: translateX(3px); }
+
+    /* ═══════════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(10,18,28,.75);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius);
+      max-width: 740px; width: 100%;
+      max-height: 90vh;
+      display: flex; flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px) scale(.97);
+      transition: transform .3s ease;
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      background: var(--navy);
+      padding: 1.5rem 1.75rem 1.25rem;
+      position: relative;
+    }
+
+    .modal-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--cat-color, var(--gold)) 0%, transparent 100%);
+    }
+
+    .modal-eyebrow {
+      display: flex; align-items: center; gap: .75rem; margin-bottom: .7rem;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .modal-desc {
+      font-size: .88rem;
+      color: rgba(255,255,255,.6);
+      margin-top: .4rem;
+      font-style: italic;
+    }
+
+    .modal-date-header {
+      font-size: .75rem;
+      color: rgba(255,255,255,.35);
+      margin-top: .5rem;
+    }
+
+    .modal-close {
+      position: absolute; top: 1rem; right: 1.25rem;
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.6);
+      transition: all .2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.18); color: #fff; }
+    .modal-close svg { width: 16px; height: 16px; }
+
+    .modal-body {
+      padding: 1.75rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .manual-label {
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .manual-label::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: var(--cream2);
+    }
+
+    .manual-content {
+      font-size: .92rem;
+      line-height: 1.8;
+      color: #2a2a2a;
+    }
+
+    .manual-content b {
+      font-weight: 700;
+      color: var(--navy);
+      display: inline-block;
+      min-width: 70px;
+    }
+
+    /* ═══════════════════════════════════════════
+       STATES
+    ═══════════════════════════════════════════ */
+    .state-box {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .state-box svg {
+      width: 48px; height: 48px;
+      opacity: .3;
+      margin-bottom: 1rem;
+      display: block;
+      margin-inline: auto;
+    }
+
+    .state-box p { font-size: .95rem; }
+
+    .loader {
+      display: flex; align-items: center; justify-content: center; gap: .75rem;
+      padding: 4rem; color: var(--muted); font-style: italic;
+    }
+
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--cream2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Config banner */
+    .config-banner {
+      background: #fdf3cd;
+      border: 1px solid #f0c040;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+    .config-banner strong { color: #7a5200; }
+    .config-banner code {
+      background: rgba(0,0,0,.06);
+      padding: .1rem .4rem;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: .83rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+      background: var(--navy);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: .78rem;
+      color: rgba(255,255,255,.3);
+      border-top: 1px solid rgba(200,168,75,.1);
+    }
+
+    footer span { color: var(--gold); }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .header-seal { width: 52px; height: 52px; }
+      .header-stats { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-inner">
+    <div class="header-seal">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 3 L23 13 L33 13 L25 19 L28 29 L20 23 L12 29 L15 19 L7 13 L17 13 Z"/>
+        <circle cx="20" cy="20" r="17" fill="none" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <div class="header-eyebrow">Poder Judicial — Provincia de Tucumán</div>
+      <h1>Instructivos <span>Judiciales</span></h1>
+      <div class="header-sub">Guías de procedimiento para operadores del sistema judicial</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-num" id="stat-total">—</span>
+        <span class="stat-lbl">Instructivos</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="stat-cats">—</span>
+        <span class="stat-lbl">Categorías</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="6" stroke="white" stroke-width="1.5"/>
+        <path d="M14 14L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input id="search-input" type="text" placeholder="Buscar por título o descripción…" autocomplete="off"/>
+    </div>
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-cat="TODOS">Todos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+  <!-- Config notice (hidden once sheet ID is set) -->
+  <div class="config-banner" id="config-banner">
+    <strong>⚙ Configuración requerida:</strong> Abrí este archivo en un editor y reemplazá
+    <code>TU_SHEET_ID_AQUI</code> en la variable <code>SHEET_ID</code> con el ID de tu Google Sheet.
+    Luego publicá la hoja: <em>Archivo → Compartir → Publicar en la web → CSV</em>.
+    <br><small>Formato de columnas esperado: <strong>Título | Descripción | Categoría | Manual Detallado | Fecha</strong></small>
+  </div>
+
+  <div class="section-header">
+    <span class="section-title">Biblioteca de Procedimientos</span>
+    <span class="result-count" id="result-count"></span>
+  </div>
+
+  <div id="cards-container" class="cards-grid">
+    <div class="loader"><div class="spinner"></div>Cargando instructivos…</div>
+  </div>
+</main>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modal-header">
+      <button class="modal-close" id="modal-close" aria-label="Cerrar">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="modal-eyebrow">
+        <span class="badge" id="modal-badge">—</span>
+        <span class="modal-date-header" id="modal-date">—</span>
+      </div>
+      <div class="modal-title" id="modal-title">—</div>
+      <div class="modal-desc" id="modal-desc">—</div>
+    </div>
+    <div class="modal-body">
+      <div class="manual-label">Manual de Procedimiento</div>
+      <div class="manual-content" id="modal-manual"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  Poder Judicial · Provincia de <span>Tucumán</span> · Sistema de Instructivos Procesales
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIGURACIÓN — editá solo esta sección
+══════════════════════════════════════════════════ */
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQzTpZAzRz0WifSC1qi9FOLTtMlDfcyuG0H6uVZ6_rAkDK3yxzlo_AJbO4jTKoD1aPFYxrlFwynmy5z/pub?output=csv';
+/* ══════════════════════════════════════════════════ */
+
+const CAT_COLORS = {
+  JUDICIAL:   'var(--c-judicial)',
+  PROTOCOLO:  'var(--c-protocolo)',
+  URGENTE:    'var(--c-urgente)',
+  ADMIN:      'var(--c-admin)',
+};
+
+let allData = [];
+let activeFilter = 'TODOS';
+
+/* ── Parse CSV ── */
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let cur = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        cols.push(cur.trim()); cur = '';
+      } else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
+  return rows;
+}
+
+/* ── Fetch Google Sheets via CSV publicado ── */
+async function fetchSheet() {
+  // Intentar con proxy CORS, luego directo
+  const proxies = [
+    `https://corsproxy.io/?url=${encodeURIComponent(CSV_URL)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(CSV_URL)}`,
+    CSV_URL
+  ];
+
+  for (const url of proxies) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (!text || text.length < 10) continue;
+      const rows = parseCSV(text);
+      if (rows.length < 2) continue;
+      return rows.slice(1).map(cols => {
+        const val = (i) => (cols[i] || '').trim();
+        return {
+          titulo: val(0),
+          desc:   val(1),
+          cat:    val(2).toUpperCase(),
+          manual: val(3),
+          fecha:  val(4),
+        };
+      }).filter(r => r.titulo);
+    } catch (err) {
+      console.warn('Proxy falló, intentando siguiente...', url);
+    }
+  }
+
+  console.error('Error al cargar datos: todos los proxies fallaron');
+  return null;
+}
+
+/* ── Build category filter buttons ── */
+function buildFilters(data) {
+  const cats = ['TODOS', ...new Set(data.map(r => r.cat).filter(Boolean).sort())];
+  const container = document.getElementById('filters');
+  container.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === 'TODOS' ? ' active' : '');
+    btn.dataset.cat = cat;
+    btn.textContent = cat === 'TODOS' ? 'Todos' : cat;
+    if (cat !== 'TODOS' && CAT_COLORS[cat]) {
+      btn.style.setProperty('--cat-btn', CAT_COLORS[cat]);
+    }
+    btn.addEventListener('click', () => setFilter(cat));
+    container.appendChild(btn);
+  });
+  // Stats
+  document.getElementById('stat-total').textContent = data.length;
+  document.getElementById('stat-cats').textContent  = cats.length - 1;
+}
+
+/* ── Filter logic ── */
+function setFilter(cat) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderCards();
+}
+
+/* ── Card rendering ── */
+function renderCards() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const container = document.getElementById('cards-container');
+
+  let filtered = allData.filter(r => {
+    const matchCat = activeFilter === 'TODOS' || r.cat === activeFilter;
+    const matchQ   = !query ||
+      r.titulo.toLowerCase().includes(query) ||
+      r.desc.toLowerCase().includes(query);
+    return matchCat && matchQ;
+  });
+
+  document.getElementById('result-count').textContent =
+    filtered.length === allData.length
+      ? `${allData.length} instructivos`
+      : `${filtered.length} de ${allData.length} instructivos`;
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5"/><path d="M16 24h16M24 16v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" transform="rotate(45 24 24)"/></svg>
+        <p>No se encontraron instructivos para esta búsqueda.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach((r, i) => {
+    const color = CAT_COLORS[r.cat] || 'var(--c-default)';
+    const card  = document.createElement('article');
+    card.className = 'card';
+    card.style.setProperty('--cat-color', color);
+    card.style.animationDelay = `${i * 40}ms`;
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="badge" style="background:${color}">${r.cat || 'GENERAL'}</span>
+          <span class="card-date">${r.fecha || ''}</span>
+        </div>
+        <div class="card-title">${r.titulo}</div>
+        <div class="card-desc">${r.desc}</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta" style="color:${color}">
+          Ver procedimiento
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>`;
+    card.addEventListener('click', () => openModal(r));
+    container.appendChild(card);
+  });
+}
+
+/* ── Modal ── */
+function openModal(r) {
+  const color = CAT_COLORS[r.cat] || 'var(--c-default)';
+  document.getElementById('modal-badge').textContent  = r.cat || 'GENERAL';
+  document.getElementById('modal-badge').style.background = color;
+  document.getElementById('modal-date').textContent   = r.fecha || '';
+  document.getElementById('modal-title').textContent  = r.titulo;
+  document.getElementById('modal-desc').textContent   = r.desc;
+  document.getElementById('modal-manual').innerHTML   = r.manual || '<em>Sin contenido disponible.</em>';
+  document.getElementById('modal-header').style.setProperty('--cat-color', color);
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ── Search ── */
+document.getElementById('search-input').addEventListener('input', renderCards);
+
+/* ── DEMO DATA (se usa cuando SHEET_ID no está configurado) ── */
+const DEMO_DATA = [
+  {
+    titulo: 'Presentación de Escrito Judicial',
+    desc: 'Procedimiento para la presentación formal de escritos ante Mesa de Entradas.',
+    cat: 'JUDICIAL',
+    manual: '<b>Paso 1:</b> Identificar el expediente y juzgado de destino.<br><b>Paso 2:</b> Ingresar a la Mesa de Entradas del fuero correspondiente.<br><b>Paso 3:</b> Presentar el escrito con carátula y copias para cada parte.<br><b>Paso 4:</b> Solicitar sello de recepción con fecha y hora.<br><b>Paso 5:</b> Conservar el cargo sellado como constancia de presentación.<br>',
+    fecha: '14/05/2025'
+  },
+  {
+    titulo: 'Protocolo de Notificación Electrónica',
+    desc: 'Pasos para notificar a las partes mediante el sistema de notificaciones electrónicas.',
+    cat: 'PROTOCOLO',
+    manual: '<b>Paso 1:</b> Acceder al Sistema de Gestión Judicial con usuario y contraseña.<br><b>Paso 2:</b> Ubicar el expediente en el módulo de notificaciones.<br><b>Paso 3:</b> Redactar el texto de la cédula electrónica.<br><b>Paso 4:</b> Verificar el domicilio electrónico registrado del destinatario.<br><b>Paso 5:</b> Confirmar el envío y registrar el número de notificación generado.<br>',
+    fecha: '10/05/2025'
+  },
+  {
+    titulo: 'Medida Cautelar Urgente',
+    desc: 'Trámite para la solicitud de medidas cautelares en casos de urgencia comprobada.',
+    cat: 'URGENTE',
+    manual: '<b>Paso 1:</b> Acreditar sumariamente la verosimilitud del derecho (fumus boni iuris).<br><b>Paso 2:</b> Demostrar el peligro en la demora (periculum in mora).<br><b>Paso 3:</b> Ofrecer contracautela si el juez lo requiere.<br><b>Paso 4:</b> Presentar el escrito en guardia judicial fuera del horario hábil si corresponde.<br><b>Paso 5:</b> Esperar resolución y notificar de forma inmediata a la parte contraria si el juez lo ordena.<br>',
+    fecha: '12/05/2025'
+  },
+  {
+    titulo: 'Pedido de Desglose Documental',
+    desc: 'Procedimiento administrativo para retirar documentos originales incorporados al expediente.',
+    cat: 'ADMIN',
+    manual: '<b>Paso 1:</b> Verificar que el documento a desglosar no sea prueba esencial del proceso.<br><b>Paso 2:</b> Presentar escrito solicitando el desglose con justificación fundada.<br><b>Paso 3:</b> Aguardar resolución judicial autorizando el retiro.<br><b>Paso 4:</b> Sustituir el original por copia certificada con constancia de desglose.<br><b>Paso 5:</b> Firmar el libro de desglose en Mesa de Entradas al momento del retiro.<br>',
+    fecha: '08/05/2025'
+  },
+  {
+    titulo: 'Apertura de Etapa Probatoria',
+    desc: 'Requisitos y pasos para la apertura formal del período de prueba en juicio ordinario.',
+    cat: 'JUDICIAL',
+    manual: '<b>Paso 1:</b> Verificar que se hayan trabado todas las relaciones procesales.<br><b>Paso 2:</b> Presentar escrito solicitando apertura a prueba dentro del plazo legal.<br><b>Paso 3:</b> Ofrecer todos los medios probatorios con indicación de pertinencia.<br><b>Paso 4:</b> Aguardar proveído judicial que recepcione la prueba admitida.<br><b>Paso 5:</b> Diligenciar los oficios y cédulas para producción de prueba en el plazo acordado.<br>',
+    fecha: '05/05/2025'
+  },
+  {
+    titulo: 'Certificación de Expediente',
+    desc: 'Trámite para obtener certificaciones sobre el estado o contenido de expedientes judiciales.',
+    cat: 'ADMIN',
+    manual: '<b>Paso 1:</b> Presentar escrito solicitando la certificación indicando fojas y datos del expediente.<br><b>Paso 2:</b> Abonar tasa judicial si corresponde según el fuero.<br><b>Paso 3:</b> Aguardar el plazo establecido para confección por parte del actuario.<br><b>Paso 4:</b> Retirar la certificación en Mesa de Entradas firmando el libro de retiro.<br>',
+    fecha: '01/05/2025'
+  },
+];
+
+/* ── Init ── */
+async function init() {
+  const container = document.getElementById('cards-container');
+
+  // demo disabled
+
+  // Hide config banner once configured
+  document.getElementById('config-banner').style.display = 'none';
+
+  const data = await fetchSheet();
+  if (!data) {
+    container.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5"/><path d="M24 16v10M24 30v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p>No se pudo conectar con Google Sheets. Verificá que la hoja sea pública y que el ID sea correcto.</p>
+      </div>`;
+    return;
+  }
+
+  allData = data;
+  buildFilters(allData);
+  renderCards();
+}
+
+init();
+</script>
+</body>
+</html>
