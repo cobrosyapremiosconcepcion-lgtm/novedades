@@ -6,34 +6,42 @@ media_folder: "assets/uploads" # Carpeta del repositorio donde se guardarán las
 public_folder: "/assets/uploads" # Ruta web pública para acceder a esos archivos
 
 collections:
-  - name: "novedades_oga"
-    label: "Novedades OGA"
-    delete: false # Evitamos que borren la colección entera por accidente
+  # Colección 1: Configuración de Categorías de Filtro
+  - name: "configuracion"
+    label: "Configuración"
+    delete: false
     files:
-      - file: "noticias.json"
-        label: "Novedades de Cobros y Apremios"
-        name: "novedades_list"
+      - file: "categorias.json"
+        label: "Categorías de Filtros"
+        name: "categorias_list"
         fields:
-          # Permite agregar, modificar o eliminar filtros/categorías
-          - label: "Categorías de Filtros"
+          - label: "Categorías de Novedades"
             name: "categorias"
             widget: "list"
             summary: "{{fields.nombre}}"
             field: { label: "Nombre de la Categoría", name: "nombre", widget: "string" }
 
-          # Lista de Novedades que se asocian a las categorías dinámicas anteriores
+  # Colección 2: Gestión de Novedades
+  - name: "novedades_oga"
+    label: "Novedades OGA"
+    delete: false
+    files:
+      - file: "noticias.json"
+        label: "Novedades de Cobros y Apremios"
+        name: "novedades_list"
+        fields:
           - label: "Lista de Novedades"
             name: "novedades"
             widget: "list"
             summary: "{{fields.fecha}} - {{fields.titulo}} [{{fields.categoria}}]"
             fields:
               - { label: "Título de la Novedad", name: "titulo", widget: "string" }
-              - { label: "Fecha", name: "fecha", widget: "date", format: "YYYY-MM-DD", default: "" }
+              - { label: "Fecha", name: "fecha", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
               - label: "Categoría"
                 name: "categoria"
                 widget: "relation"
-                collection: "novedades_oga"
-                file: "novedades_list"
+                collection: "configuracion" # Vincula con la otra colección
+                file: "categorias_list"      # Vincula con el archivo específico
                 search_fields: ["categorias.*.nombre"]
                 value_field: "categorias.*.nombre"
                 display_fields: ["categorias.*.nombre"]

@@ -10,18 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const urgentTitle = document.getElementById('urgent-title');
   const urgentDesc = document.getElementById('urgent-desc');
 
-  // 1. Cargar las novedades y categorías desde el archivo noticias.json
+  // 1. Cargar las novedades y categorías desde sus respectivos archivos JSON
   async function loadNews() {
     try {
-      // Usamos cache-busting para evitar que el navegador guarde la versión vieja de noticias.json
-      const response = await fetch(`noticias.json?t=${Date.now()}`);
-      if (!response.ok) throw new Error('No se pudo cargar el archivo de novedades.');
+      const cacheBuster = `t=${Date.now()}`;
+      // Cargar ambos archivos JSON en paralelo para mayor velocidad
+      const [newsResponse, categoriesResponse] = await Promise.all([
+        fetch(`noticias.json?${cacheBuster}`),
+        fetch(`categorias.json?${cacheBuster}`)
+      ]);
+
+      if (!newsResponse.ok) throw new Error('No se pudo cargar el archivo de novedades.');
+      if (!categoriesResponse.ok) throw new Error('No se pudo cargar el archivo de categorías.');
       
-      const data = await response.json();
+      const newsDataRaw = await newsResponse.json();
+      const categoriesDataRaw = await categoriesResponse.json();
       
-      // Decap CMS almacena la lista en un objeto que definiremos en config.yml.
-      newsData = data.novedades || [];
-      const categoriesData = data.categorias || [];
+      newsData = newsDataRaw.novedades || [];
+      const categoriesData = categoriesDataRaw.categorias || [];
       
       // Ordenar por fecha descendente (más recientes primero)
       newsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -31,12 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setupUrgentAlert();
       renderNews();
     } catch (error) {
-      console.error('Error al cargar novedades:', error);
+      console.error('Error al cargar novedades o categorías:', error);
       newsList.innerHTML = `
         <div class="no-results">
           <div class="no-results-icon">⚠️</div>
           <h3>Error de Conexión</h3>
-          <p>No pudimos cargar las novedades del servidor. Intente recargar la página.</p>
+          <p>No pudimos cargar la información del servidor. Intente recargar la página.</p>
         </div>
       `;
     }
