@@ -1,20 +1,4 @@
 {
-  "categorias": [
-    "Aréa Conclusiva",
-    "Aréa Monitoria",
-    "Aréa Postulatoria",
-    {
-      "nombre": "Avisos Urgentes"
-    },
-    "Todas las Aréas"
-  ],
-  "novedades": [
-    {
-      "fecha": "",
-      "titulo": "REVOCATORIA",
-      "categoria": "Resoluciones",
-      "resumen": "ASDAS",
-      "contenido": "ASDASD"
-    }
-  ]
+  "categorias": [],
+  "novedades": []
 }
