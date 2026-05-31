@@ -1,17 +1,12 @@
 {
   "categorias": [
-    {
-      "nombre": "Procedimientos"
-    },
-    {
-      "nombre": "Resoluciones"
-    },
-    {
-      "nombre": "Instructivos"
-    },
+    "Aréa Conclusiva",
+    "Aréa Monitoria",
+    "Aréa Postulatoria",
     {
       "nombre": "Avisos Urgentes"
-    }
+    },
+    "Todas las Aréas"
   ],
   "novedades": [
     {
