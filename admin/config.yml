@@ -1,0 +1,35 @@
+backend:
+  name: git-gateway
+  branch: main # Rama del repositorio de GitHub que se actualizará
+
+media_folder: "assets/uploads" # Carpeta del repositorio donde se guardarán las imágenes/archivos que subas
+public_folder: "/assets/uploads" # Ruta web pública para acceder a esos archivos
+
+collections:
+  - name: "novedades_oga"
+    label: "Novedades OGA"
+    delete: false # Evitamos que borren la colección entera por accidente
+    files:
+      - file: "noticias.json"
+        label: "Novedades de Cobros y Apremios"
+        name: "novedades_list"
+        fields:
+          - label: "Lista de Novedades"
+            name: "novedades"
+            widget: "list"
+            summary: "{{fields.fecha}} - {{fields.titulo}} [{{fields.categoria}}]"
+            fields:
+              - { label: "Título de la Novedad", name: "titulo", widget: "string" }
+              - { label: "Fecha", name: "fecha", widget: "date", format: "YYYY-MM-DD", default: "" }
+              - label: "Categoría"
+                name: "categoria"
+                widget: "select"
+                options:
+                  - "Procedimientos"
+                  - "Resoluciones"
+                  - "Instructivos"
+                  - "Avisos Urgentes"
+              - { label: "Resumen Breve", name: "resumen", widget: "string", description: "Se muestra como vista previa en el listado de noticias." }
+              - { label: "Contenido Detallado", name: "contenido", widget: "markdown", description: "Escribe la noticia aquí. Podés usar negritas, viñetas y subtítulos." }
+              - { label: "Nombre del Archivo Adjunto", name: "adjunto_nombre", widget: "string", required: false, description: "Ejemplo: Resolucion_12_2026.pdf (dejar vacío si no hay)" }
+              - { label: "Enlace o URL del Adjunto", name: "adjunto_url", widget: "string", required: false, description: "Ejemplo: https://justucuman.gov.ar/archivo.pdf (dejar vacío si no hay)" }
