@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const newsList = document.getElementById('news-list');
   const searchInput = document.getElementById('search-input');
-  const filterButtons = document.querySelectorAll('.tag-btn');
+  const filterTagsContainer = document.getElementById('filter-tags-container');
   const urgentAlert = document.getElementById('urgent-alert');
   const urgentTitle = document.getElementById('urgent-title');
   const urgentDesc = document.getElementById('urgent-desc');
 
-  // 1. Cargar las novedades desde el archivo noticias.json
+  // 1. Cargar las novedades y categorías desde el archivo noticias.json
   async function loadNews() {
     try {
       // Usamos cache-busting para evitar que el navegador guarde la versión vieja de noticias.json
@@ -20,12 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       // Decap CMS almacena la lista en un objeto que definiremos en config.yml.
-      // Soportamos tanto si viene como array directo o envuelto en un objeto.
-      newsData = data.novedades || data || [];
+      newsData = data.novedades || [];
+      const categoriesData = data.categorias || [];
       
       // Ordenar por fecha descendente (más recientes primero)
       newsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
+      // Renderizar los filtros dinámicos y la alerta
+      renderCategories(categoriesData);
       setupUrgentAlert();
       renderNews();
     } catch (error) {
@@ -40,17 +42,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 2. Configurar la alerta urgente si existe alguna reciente
+  // 2. Renderizar dinámicamente los botones de filtros (categorías)
+  function renderCategories(categories) {
+    if (!filterTagsContainer) return;
+    
+    // Limpiar contenedor conservando la etiqueta
+    filterTagsContainer.innerHTML = '<span class="filter-label">Filtrar por:</span>';
+    
+    // 1. Botón "Todos"
+    const allBtn = document.createElement('button');
+    allBtn.className = 'tag-btn active';
+    allBtn.setAttribute('data-category', 'todos');
+    allBtn.textContent = 'Todos';
+    allBtn.addEventListener('click', handleCategoryClick);
+    filterTagsContainer.appendChild(allBtn);
+    
+    // 2. Un botón por cada categoría de noticias.json
+    categories.forEach(cat => {
+      const name = cat.nombre || cat;
+      if (!name) return;
+      
+      const btn = document.createElement('button');
+      btn.className = 'tag-btn';
+      btn.setAttribute('data-category', name);
+      btn.textContent = name;
+      btn.addEventListener('click', handleCategoryClick);
+      filterTagsContainer.appendChild(btn);
+    });
+  }
+
+  // Manejador del clic en las categorías
+  function handleCategoryClick(e) {
+    const allButtons = filterTagsContainer.querySelectorAll('.tag-btn');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    
+    currentCategory = e.currentTarget.getAttribute('data-category');
+    renderNews();
+  }
+
+  // 3. Configurar la alerta urgente si existe alguna reciente (que contenga "urgente" en su categoría)
   function setupUrgentAlert() {
-    // Buscar la novedad más reciente de la categoría 'Avisos Urgentes'
-    const urgentNews = newsData.find(item => item.categoria === 'Avisos Urgentes');
+    const urgentNews = newsData.find(item => item.categoria && item.categoria.toLowerCase().includes('urgente'));
     
     if (urgentNews) {
       urgentTitle.textContent = urgentNews.titulo;
       urgentDesc.textContent = urgentNews.resumen;
       urgentAlert.classList.add('active');
       
-      // Permitir hacer clic para ir a la noticia
       urgentAlert.style.cursor = 'pointer';
       urgentAlert.onclick = () => {
         const element = document.getElementById(`noticia-${newsData.indexOf(urgentNews)}`);
@@ -67,9 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 3. Renderizar las novedades aplicando filtros de categoría y búsqueda
+  // 4. Renderizar las novedades aplicando filtros de categoría y búsqueda
   function renderNews() {
-    // Filtrar datos
     const filteredNews = newsData.filter(item => {
       const matchesCategory = currentCategory === 'todos' || item.categoria === currentCategory;
       
@@ -79,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchesCategory && matchesSearch;
     });
 
-    // Limpiar contenedor
     newsList.innerHTML = '';
 
     if (filteredNews.length === 0) {
@@ -93,21 +130,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Renderizar tarjetas
     filteredNews.forEach((item, index) => {
-      const id = newsData.indexOf(item); // Índice real en el array
+      const id = newsData.indexOf(item);
       const card = document.createElement('article');
       card.className = 'news-card';
       card.id = `noticia-${id}`;
 
-      // Formatear fecha para legibilidad local
       const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
       const formattedDate = new Date(item.fecha).toLocaleDateString('es-AR', dateOptions);
 
       // Crear clases CSS amigables para el badge
-      const categorySlug = item.categoria.toLowerCase().replace(/\s+/g, '-');
+      const categorySlug = item.categoria ? item.categoria.toLowerCase().replace(/\s+/g, '-') : 'default';
 
-      // Crear botón de adjunto si existe
       let attachmentHTML = '';
       if (item.adjunto_url && item.adjunto_url.trim() !== '') {
         const nombreAdjunto = item.adjunto_nombre || 'Descargar Documento';
@@ -119,12 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }
 
-      // Convertir cuerpo en markdown a HTML básico
       const bodyHTML = parseMarkdown(item.contenido || '');
 
       card.innerHTML = `
         <div class="card-header">
-          <span class="badge ${categorySlug}">${item.categoria}</span>
+          <span class="badge ${categorySlug}">${item.categoria || 'Novedad'}</span>
           <span class="news-date">${formattedDate}</span>
         </div>
         <h2>${item.titulo}</h2>
@@ -146,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
       newsList.appendChild(card);
     });
 
-    // Agregar manejadores para los botones "Leer más"
     document.querySelectorAll('.read-more-btn').forEach(button => {
       button.addEventListener('click', (e) => {
         const btn = e.currentTarget;
@@ -167,34 +199,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Parser básico de Markdown a HTML (Para no requerir librerías pesadas)
+  // 5. Parser básico de Markdown a HTML (Para no requerir librerías pesadas)
   function parseMarkdown(md) {
     let html = md;
     
-    // Escapar caracteres HTML básicos para seguridad
     html = html
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    // Negritas (**texto**)
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Títulos de nivel 3 (### título)
     html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
-    // Títulos de nivel 4 (#### título)
     html = html.replace(/^#### (.*?)$/gm, '<h4>$1</h4>');
-
-    // Listas con viñetas (* item o - item)
-    // Agrupa viñetas consecutivas
     html = html.replace(/^\s*[\*\-]\s+(.*?)$/gm, '<li>$1</li>');
-    // Envolver las listas li consecutivas en ul
     html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
-    // Limpieza de ul anidados erróneamente por el modificador global de arriba
     html = html.replace(/<\/ul>\s*<ul>/g, '');
 
-    // Saltos de línea y párrafos (buscar dobles saltos de línea)
-    // Evitamos encerrar bloques HTML ya procesados (como h3 o ul) en párrafos
     const blocks = html.split(/\n\n+/);
     html = blocks.map(block => {
       block = block.trim();
@@ -202,23 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (block.startsWith('<h3') || block.startsWith('<h4') || block.startsWith('<ul') || block.startsWith('<ol')) {
         return block;
       }
-      // Reemplazar saltos de línea individuales con <br>
       return `<p>${block.replace(/\n/g, '<br>')}</p>`;
     }).join('');
 
     return html;
   }
-
-  // 5. Filtros por botones de categoría
-  filterButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      
-      currentCategory = e.currentTarget.getAttribute('data-category');
-      renderNews();
-    });
-  });
 
   // 6. Búsqueda interactiva en tiempo real (con debounce simple)
   let searchTimeout;

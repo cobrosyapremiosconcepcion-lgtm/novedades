@@ -14,18 +14,14 @@
 </head>
 <body>
 
-  <!-- Encabezado Institucional -->
+  <!-- Encabezado Institucional (Diseño Claro al estilo de acordadas.justucuman.gov.ar) -->
   <header>
     <div class="header-container">
       <div class="brand">
-        <div class="logo-badge">OGA</div>
-        <div class="brand-text">
-          <h1>Cobros y Apremios</h1>
-          <p>Oficina de Gestión Asociada • Poder Judicial de Tucumán</p>
-        </div>
+        <!-- Logo oficial suministrado -->
+        <img src="assets/logo.jpg" alt="Logo Corte Suprema de Justicia - Poder Judicial de Tucumán - OGA Cobros y Apremios Concepcion" class="brand-logo">
       </div>
       <div class="nav-links">
-        <a href="https://www.justucuman.gov.ar" target="_blank" class="nav-btn secondary">Portal Judicial</a>
         <!-- Este botón redirige al panel autoadministrable de Decap CMS -->
         <a href="admin/" class="nav-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -35,11 +31,11 @@
     </div>
   </header>
 
-  <!-- Cuerpo Principal -->
+  <!-- Cuerpo Principal (Ancho completo centrado sin barra lateral) -->
   <main class="main-wrapper">
     
     <!-- Sección de Contenido (Noticias) -->
-    <section>
+    <section class="content-section">
       
       <!-- Banner de Avisos Urgentes (Se activa dinámicamente vía JS) -->
       <div id="urgent-alert" class="urgent-banner">
@@ -53,15 +49,11 @@
       <!-- Buscador y Filtros -->
       <div class="search-filter-section">
         <div class="search-box">
-          <input type="text" id="search-input" class="search-input" placeholder="Buscar por título, palabras clave o contenido de la novedad...">
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar por título, palabra clave o contenido...">
         </div>
-        <div class="filter-tags">
+        <div class="filter-tags" id="filter-tags-container">
           <span class="filter-label">Filtrar por:</span>
-          <button class="tag-btn active" data-category="todos">Todos</button>
-          <button class="tag-btn" data-category="Procedimientos">Procedimientos</button>
-          <button class="tag-btn" data-category="Resoluciones">Resoluciones</button>
-          <button class="tag-btn" data-category="Instructivos">Instructivos</button>
-          <button class="tag-btn" data-category="Avisos Urgentes">Avisos Urgentes</button>
+          <!-- Se generarán dinámicamente vía JS (el botón "Todos" y las categorías de noticias.json) -->
         </div>
       </div>
 
@@ -74,64 +66,6 @@
       </div>
       
     </section>
-
-    <!-- Barra Lateral (Widgets y Enlaces) -->
-    <aside class="sidebar">
-      
-      <!-- Widget: Enlaces del Fuero -->
-      <div class="widget">
-        <h3 class="widget-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          Enlaces de Utilidad
-        </h3>
-        <ul class="useful-links">
-          <li class="link-item">
-            <a href="https://mev.justucuman.gov.ar" target="_blank">Mesa de Entradas Virtual (MEV)</a>
-          </li>
-          <li class="link-item">
-            <a href="https://www.justucuman.gov.ar/formularios-tasa-justicia" target="_blank">Tasas de Justicia Judiciales</a>
-          </li>
-          <li class="link-item">
-            <a href="https://www.justucuman.gov.ar/caja-de-pagos" target="_blank">Portal de Pagos Oficiales</a>
-          </li>
-          <li class="link-item">
-            <a href="https://www.justucuman.gov.ar/notificaciones-electronicas" target="_blank">Notificaciones Electrónicas</a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Widget: Contacto OGA -->
-      <div class="widget">
-        <h3 class="widget-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          Contacto OGA N° 1
-        </h3>
-        <div class="contact-info">
-          <div class="contact-item">
-            <span class="contact-icon">📍</span>
-            <div class="contact-details">
-              <strong>Ubicación Física</strong>
-              Centro Judicial Capital, Pasaje Vélez Sarsfield 450, Planta Baja, San Miguel de Tucumán.
-            </div>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">✉️</span>
-            <div class="contact-details">
-              <strong>Correo Institucional</strong>
-              ogacobrosapremios@justucuman.gov.ar
-            </div>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">🕒</span>
-            <div class="contact-details">
-              <strong>Horarios de Atención</strong>
-              Lunes a Viernes de 7:30 a 12:30 hs.
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </aside>
   </main>
 
   <!-- Pie de Página -->
@@ -139,7 +73,7 @@
     <div class="footer-content">
       <div class="footer-brand">
         <h2>Poder Judicial de Tucumán</h2>
-        <p>Oficina de Gestión Asociada de Cobros y Apremios</p>
+        <p>Oficina de Gestión Asociada de Cobros y Apremios Concepcion</p>
       </div>
       <div class="footer-copy">
         &copy; 2026 OGA Cobros y Apremios. Todos los derechos reservados.
