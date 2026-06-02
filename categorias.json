@@ -1,15 +1,3 @@
 {
-  "categorias": [
-    "Postulatoria",
-    {
-      "nombre": "Resoluciones"
-    },
-    {
-      "nombre": "Instructivos"
-    },
-    {
-      "nombre": "Avisos Urgentes"
-    },
-    "Datos"
-  ]
+  "categorias": []
 }
