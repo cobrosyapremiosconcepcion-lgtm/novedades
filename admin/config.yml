@@ -6,21 +6,21 @@ media_folder: "assets/uploads" # Carpeta del repositorio donde se guardarán las
 public_folder: "/assets/uploads" # Ruta web pública para acceder a esos archivos
 
 collections:
-  # Colección para gestionar las categorías
-  - name: "categorias"
-    label: "Categorías"
-    folder: "novedades"
-    file: "novedades/categorias.json"
-    extension: "json"
-    format: "json"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - label: "Categorías disponibles"
-        name: "categorias"
-        widget: "list"
-        field: { label: "Nombre de la Categoría", name: "nombre", widget: "string" }
-        
+  # Colección 1: Configuración de Categorías de Filtro
+  - name: "configuracion"
+    label: "Configuración"
+    delete: false
+    files:
+      - file: "categorias.json"
+        label: "Categorías de Filtros"
+        name: "categorias_list"
+        fields:
+          - label: "Categorías de Novedades"
+            name: "categorias"
+            widget: "list"
+            summary: "{{fields.nombre}}"
+            field: { label: "Nombre de la Categoría", name: "nombre", widget: "string" }
+
   # Colección 2: Gestión de Novedades
   - name: "novedades_oga"
     label: "Novedades OGA"
@@ -40,8 +40,8 @@ collections:
               - label: "Categoría"
                 name: "categoria"
                 widget: "relation"
-                collection: "configuracion" # Vincula con la otra colección
-                file: "categorias_list"      # Vincula con el archivo específico
+                collection: "configuracion"
+                file: "categorias_list"
                 search_fields: ["categorias.*.nombre"]
                 value_field: "categorias.*.nombre"
                 display_fields: ["categorias.*.nombre"]
@@ -49,25 +49,3 @@ collections:
               - { label: "Contenido Detallado", name: "contenido", widget: "markdown", description: "Escribe la noticia aquí. Podés usar negritas, viñetas y subtítulos." }
               - { label: "Nombre del Archivo Adjunto", name: "adjunto_nombre", widget: "string", required: false, description: "Ejemplo: Resolucion_12_2026.pdf (dejar vacío si no hay)" }
               - { label: "Enlace o URL del Adjunto", name: "adjunto_url", widget: "string", required: false, description: "Ejemplo: https://justucuman.gov.ar/archivo.pdf (dejar vacío si no hay)" }
-
-# Colección para las noticias/novedades
-  - name: "noticias"
-    label: "Noticias"
-    folder: "novedades"
-    file: "novedades/noticias.json"
-    extension: "json"
-    format: "json"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Título", name: "titulo", widget: "string" }
-      - { label: "Fecha", name: "fecha", widget: "datetime" }
-      - label: "Categoría"
-        name: "categoria"
-        widget: "relation"
-        collection: "categorias" # Apita a la colección de arriba
-        file: "novedades/categorias.json"
-        search_fields: ["categorias.*"]
-        value_field: "categorias.*" # Toma el texto de la lista
-        display_fields: ["categorias.*"]
-      - { label: "Cuerpo de la Noticia", name: "cuerpo", widget: "markdown" }
