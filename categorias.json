@@ -2,6 +2,9 @@
   "categorias": [
     {
       "nombre": "Area Postulatoria"
+    },
+    {
+      "nombre": "Area Monitoria"
     }
   ]
 }
