@@ -26,6 +26,15 @@
       "contenido": "Debido a las tareas de mantenimiento y modernización del sistema informático de la OGA de Cobros y Apremios, se recuerdan los canales de comunicación vigentes:\n\n* **Atención presencial:** Lunes a Viernes de 7:30 a 12:30 hs en la mesa de entradas física (Centro Judicial Concepción).\n* **Consultas telefónicas:** Interno 4455 / 4456 en el horario judicial.\n* **Correo electrónico institucional:** ogacobrosapremios@justucuman.gov.ar\n\nRecomendamos priorizar los trámites a través del portal de notificaciones electrónicas para una respuesta más rápida.",
       "adjunto_nombre": "",
       "adjunto_url": ""
+    },
+    {
+      "titulo": "Nueva planilla de liquidación de tasas de justicia y recargos",
+      "fecha": "2026-05-20",
+      "categoria": "Avisos Urgentes",
+      "resumen": "Ya se encuentra disponible para descarga la planilla de cálculo automatizada para liquidaciones de tasas e intereses fiscales actualizada al mes en curso.",
+      "contenido": "Se ha publicado la actualización mensual del archivo Excel para el cálculo de intereses, recargos y tasas de justicia aplicables a los juicios de ejecución y apremios.\n\n### Cambios en esta versión:\n1. Actualización de la tasa activa aplicada por el Banco del Tucumán.\n2. Corrección en la fórmula de cómputo para multas de convenios de pago incumplidos.\n3. Incorporación del nuevo formulario de liquidación unificado.\n\nEs de carácter obligatorio utilizar esta versión para todas las propuestas de liquidación que se presenten para homologación judicial a partir de la fecha.",
+      "adjunto_nombre": "Planilla_Liquidacion_Apremiados_v4.xlsx",
+      "adjunto_url": "https://www.justucuman.gov.ar/files/planilla_v4.xlsx"
     }
   ]
 }
