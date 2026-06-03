@@ -35,8 +35,7 @@ El panel de administración funciona de forma 100% estática en tu navegador y y
 ### Credenciales de Acceso por Defecto:
 1. Accedé a tu web agregando `/admin/` al final de la URL (ejemplo: `https://tu-usuario.github.io/novedades/admin/`).
 2. Se te presentará una pantalla de inicio de sesión.
-3. Ingresá la contraseña de administrador establecida:
-   * **Contraseña:** `concepcion2026`
+3. Ingresá la contraseña de administrador establecida
 4. Hacé clic en **"Iniciar Sesión"**.
 
 El sistema validará de forma segura las claves encriptadas conectándose directamente con la API de GitHub. Al validar con éxito, las secciones de **Gestión de Novedades** y **Categorías de Filtros** quedarán desbloqueadas de manera inmediata. La sesión durará activa en tu navegador hasta que cierres la pestaña o hagas clic en *"Salir del Panel"*.
