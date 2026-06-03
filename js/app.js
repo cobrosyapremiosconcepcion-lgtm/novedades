@@ -405,6 +405,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Lógica del Formulario Público de Propuestas (Google Sheets) ---
+  const publicRequestForm = document.getElementById('public-request-form');
+  const requestSuccessMsg = document.getElementById('request-success-msg');
+  const btnNewRequest = document.getElementById('btn-new-request');
+
+  if (publicRequestForm) {
+    publicRequestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWOStMbXHrnJ7R11JXcRBOLPLXIZniaoIl183QC48g1t9JsZqFOu1rM314jZWkxzyXMQ/exec';
+      const scriptUrl = localStorage.getItem('oga_google_script_url') || DEFAULT_SCRIPT_URL;
+      if (!scriptUrl || !scriptUrl.trim().startsWith('https://script.google.com')) {
+        alert('El servicio de propuestas no se encuentra configurado por la administración en este navegador/dispositivo.');
+        return;
+      }
+
+      const name = document.getElementById('req-name').value.trim();
+      const detail = document.getElementById('req-detail').value.trim();
+      const submitBtn = document.getElementById('btn-submit-request');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      try {
+        // Hacemos el POST en modo no-cors para evitar dolores de cabeza con preflight CORS de Google
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: JSON.stringify({
+            action: 'create',
+            nombre: name,
+            detalle: detail
+          })
+        });
+
+        // Al ser 'no-cors' la respuesta es opaca, asumimos éxito si no arrojó excepción
+        publicRequestForm.reset();
+        publicRequestForm.style.display = 'none';
+        requestSuccessMsg.style.display = 'block';
+
+      } catch (err) {
+        console.error(err);
+        alert('Hubo un error al enviar tu propuesta. Por favor, intente más tarde.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Propuesta';
+      }
+    });
+  }
+
+  if (btnNewRequest) {
+    btnNewRequest.addEventListener('click', () => {
+      requestSuccessMsg.style.display = 'none';
+      publicRequestForm.style.display = 'block';
+    });
+  }
+
   // Inicializar carga
   loadData();
 });

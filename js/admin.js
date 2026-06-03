@@ -302,9 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="td-title"><strong>${item.titulo}</strong></td>
         <td><span class="table-badge">${item.categoria || 'Novedad'}</span></td>
         <td>${formattedDate}</td>
-        <td class="table-actions">
-          <button class="action-btn edit-btn" data-index="${index}">Editar</button>
-          <button class="action-btn delete-btn" data-index="${index}">Eliminar</button>
+        <td>
+          <div class="table-actions">
+            <button class="action-btn edit-btn" data-index="${index}">Editar</button>
+            <button class="action-btn delete-btn" data-index="${index}">Eliminar</button>
+          </div>
         </td>
       `;
       newsTableBody.appendChild(tr);
@@ -672,9 +674,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="td-title"><strong>${item.titulo}</strong></td>
         <td><span class="table-badge">${stepsCount} pasos</span></td>
         <td>${formattedDate}</td>
-        <td class="table-actions">
-          <button class="action-btn edit-manual-btn" data-index="${index}">Editar</button>
-          <button class="action-btn delete-manual-btn" data-index="${index}">Eliminar</button>
+        <td>
+          <div class="table-actions">
+            <button class="action-btn edit-manual-btn" data-index="${index}">Editar</button>
+            <button class="action-btn delete-manual-btn" data-index="${index}">Eliminar</button>
+          </div>
         </td>
       `;
       manualsTableBody.appendChild(tr);
@@ -875,6 +879,185 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Operaciones de Requerimientos Recibidos (Google Sheets) ---
+  const googleScriptUrlInput = document.getElementById('google-script-url-input');
+  const btnSaveGoogleUrl = document.getElementById('btn-save-google-url');
+  const googleConfigWarning = document.getElementById('google-config-warning');
+  const requestsTableBody = document.getElementById('requests-table-body');
+
+  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWOStMbXHrnJ7R11JXcRBOLPLXIZniaoIl183QC48g1t9JsZqFOu1rM314jZWkxzyXMQ/exec';
+  let googleScriptUrl = localStorage.getItem('oga_google_script_url') || DEFAULT_SCRIPT_URL;
+  if (googleScriptUrlInput) {
+    googleScriptUrlInput.value = googleScriptUrl;
+  }
+  updateGoogleConfigUI();
+
+  function updateGoogleConfigUI() {
+    if (googleScriptUrl && googleScriptUrl.trim().startsWith('https://script.google.com')) {
+      if (googleConfigWarning) googleConfigWarning.style.display = 'none';
+    } else {
+      if (googleConfigWarning) googleConfigWarning.style.display = 'block';
+    }
+  }
+
+  if (btnSaveGoogleUrl) {
+    btnSaveGoogleUrl.addEventListener('click', () => {
+      const urlVal = googleScriptUrlInput.value.trim();
+      if (urlVal && urlVal.startsWith('https://script.google.com')) {
+        localStorage.setItem('oga_google_script_url', urlVal);
+        googleScriptUrl = urlVal;
+        showToast('URL de Google Script guardada con éxito.');
+        updateGoogleConfigUI();
+        loadGoogleRequests();
+      } else {
+        showToast('Ingrese una URL válida de Google Apps Script Web App.', true);
+      }
+    });
+  }
+
+  // --- Operaciones de Requerimientos Recibidos (Google Sheets - JSONP) ---
+  window.handleGoogleRequestsCallback = function(data) {
+    // Remover el script temporal
+    const tempScript = document.getElementById('jsonp-temp-script');
+    if (tempScript) tempScript.remove();
+
+    if (data.error) {
+      showToast('Error en la planilla: ' + data.error, true);
+      requestsTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Error en Google Sheets: ${data.error}</td></tr>`;
+      return;
+    }
+
+    const list = data.requerimientos || [];
+    list.sort((a, b) => b.id - a.id);
+    renderRequestsTable(list);
+  };
+
+  async function loadGoogleRequests() {
+    if (!requestsTableBody) return;
+    if (!googleScriptUrl || !googleScriptUrl.trim().startsWith('https://script.google.com')) {
+      requestsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Ingrese la URL de su Script para conectarse a Google Sheets.</td></tr>';
+      return;
+    }
+
+    requestsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Consultando Google Sheets (JSONP)...</td></tr>';
+
+    try {
+      const oldScript = document.getElementById('jsonp-temp-script');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonp-temp-script';
+      // Inyección JSONP inmune a CORS
+      script.src = googleScriptUrl + (googleScriptUrl.includes('?') ? '&' : '?') + 'callback=handleGoogleRequestsCallback&t=' + Date.now();
+      
+      script.onerror = function() {
+        showToast('Error de red al conectar con Google Sheets.', true);
+        requestsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Error de red. Verifique la URL de su Script de Google.</td></tr>';
+      };
+
+      document.body.appendChild(script);
+
+    } catch (e) {
+      console.error(e);
+      showToast('Error al iniciar la consulta.', true);
+      requestsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Error al iniciar consulta JSONP.</td></tr>';
+    }
+  }
+
+  function renderRequestsTable(list) {
+    requestsTableBody.innerHTML = '';
+    if (list.length === 0) {
+      requestsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No se recibieron propuestas en la planilla de Google Sheets.</td></tr>';
+      return;
+    }
+
+    list.forEach(item => {
+      const tr = document.createElement('tr');
+      const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' };
+      const formattedDate = new Date(item.fecha).toLocaleDateString('es-AR', dateOptions);
+
+      let badgeClass = 'default';
+      if (item.estado === 'Pendiente') badgeClass = 'avisos-urgentes';
+      if (item.estado === 'Aprobado') badgeClass = 'procedimientos';
+      if (item.estado === 'Completado') badgeClass = 'instructivos';
+
+      let actionsHTML = '';
+      if (item.estado === 'Pendiente') {
+        actionsHTML = `
+          <button class="action-btn edit-btn approve-req-btn" data-id="${item.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Aprobar</button>
+          <button class="action-btn delete-btn reject-req-btn" data-id="${item.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Rechazar</button>
+        `;
+      } else if (item.estado === 'Aprobado') {
+        actionsHTML = `
+          <button class="action-btn edit-btn resolve-req-btn" data-id="${item.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--primary-light); color: white;">Completar</button>
+        `;
+      } else {
+        actionsHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">Sin acciones</span>`;
+      }
+
+      tr.innerHTML = `
+        <td>${formattedDate}</td>
+        <td><strong>${item.nombre}</strong></td>
+        <td style="max-width: 300px; word-wrap: break-word; white-space: normal;">${item.detalle}</td>
+        <td><span class="table-badge ${badgeClass}">${item.estado}</span></td>
+        <td><div class="table-actions">${actionsHTML}</div></td>
+      `;
+      
+      requestsTableBody.appendChild(tr);
+    });
+
+    requestsTableBody.querySelectorAll('.approve-req-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        await updateRequestStatus(id, 'Aprobado');
+      });
+    });
+
+    requestsTableBody.querySelectorAll('.reject-req-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        if (confirm('¿Desea marcar esta propuesta como rechazada/archivada?')) {
+          await updateRequestStatus(id, 'Rechazado');
+        }
+      });
+    });
+
+    requestsTableBody.querySelectorAll('.resolve-req-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        await updateRequestStatus(id, 'Completado');
+      });
+    });
+  }
+
+  async function updateRequestStatus(id, nuevoEstado) {
+    if (!googleScriptUrl) return;
+    
+    showToast('Actualizando planilla en Google...');
+    
+    try {
+      await fetch(googleScriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify({
+          action: 'update',
+          id: id,
+          estado: nuevoEstado
+        })
+      });
+
+      showToast('¡Planilla actualizada con éxito!');
+      setTimeout(loadGoogleRequests, 800);
+
+    } catch (e) {
+      console.error(e);
+      showToast('Error al actualizar la planilla.', true);
+    }
+  }
+
   // --- Lógica del Sistema de Pestañas (Tabs) ---
   function switchTab(tabId) {
     tabButtons.forEach(btn => {
@@ -898,6 +1081,9 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', (e) => {
       const tabId = e.currentTarget.getAttribute('data-tab');
       switchTab(tabId);
+      if (tabId === 'requests') {
+        loadGoogleRequests();
+      }
     });
   });
 

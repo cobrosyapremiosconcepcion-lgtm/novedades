@@ -60,6 +60,7 @@
         <button class="tab-btn active" data-tab="news">📰 Novedades Publicadas</button>
         <button class="tab-btn" data-tab="categories">🏷️ Categorías de Filtros</button>
         <button class="tab-btn" data-tab="manuals">📖 Gestionar Manuales</button>
+        <button class="tab-btn" data-tab="requests">📥 Propuestas de Usuarios</button>
       </nav>
 
       <!-- Pestaña: Novedades -->
@@ -132,6 +133,41 @@
               </thead>
               <tbody id="manuals-table-body">
                 <!-- Renderizado por js/admin.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pestaña: Propuestas y Requerimientos Recibidos (Google Sheets) -->
+      <section id="requests-tab" class="tab-content">
+        <div class="admin-card">
+          <div class="admin-card-header" style="flex-wrap: wrap; gap: 1rem;">
+            <h2>Propuestas e Informes de Usuarios</h2>
+            <!-- Configuración del script de Google -->
+            <div style="display: flex; gap: 0.5rem; align-items: center; width: 100%; max-width: 500px; margin-left: auto;">
+              <input type="url" id="google-script-url-input" class="form-control" placeholder="Pegar URL de Google Apps Script Web App..." style="padding: 0.4rem 0.6rem; font-size: 0.8rem;">
+              <button type="button" id="btn-save-google-url" class="action-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; white-space: nowrap;">Guardar URL</button>
+            </div>
+          </div>
+          
+          <div class="warning-box" id="google-config-warning" style="background: #fee2e2; border-color: #fecaca; border-left-color: #ef4444; color: #991b1b; display: block;">
+            <strong>Falta Configuración:</strong> Pegá la URL de tu aplicación web de Google Script arriba para conectar con la base de datos de Google Sheets y visualizar las sugerencias recibidas.
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Detalle de la Propuesta / Función</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="requests-table-body">
+                <tr><td colspan="5" style="text-align: center;">Ingrese la URL de su Script para conectarse a Google Sheets.</td></tr>
               </tbody>
             </table>
           </div>

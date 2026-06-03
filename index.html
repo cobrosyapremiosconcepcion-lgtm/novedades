@@ -44,6 +44,7 @@
     <nav class="main-nav-tabs">
       <button class="main-tab-btn active" data-main-tab="news">📰 Novedades Oficiales</button>
       <button class="main-tab-btn" data-main-tab="manuals">📖 Manuales e Instructivos</button>
+      <button class="main-tab-btn" data-main-tab="requests">📥 Enviar Propuesta / Sugerencia</button>
     </nav>
 
     <!-- Contenido Pestaña 1: Novedades -->
@@ -111,6 +112,39 @@
           <!-- Contenedor de la línea de tiempo vertical -->
           <div id="manual-steps-timeline" class="timeline-container">
             <!-- Cargado por JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Contenido Pestaña 3: Propuestas y Sugerencias -->
+    <div id="requests-tab-content" class="main-tab-content">
+      <section class="content-section" style="max-width: 600px; margin: 0 auto;">
+        <div class="admin-card" style="border-top: 4px solid var(--primary-light);">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 0.3rem;">Enviar Propuesta o Sugerencia</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Enviá tus consultas, correcciones u observaciones de funciones para ser evaluadas por el administrador.</p>
+          </div>
+          
+          <form id="public-request-form">
+            <div class="form-group">
+              <label for="req-name">Tu Nombre y Apellido *</label>
+              <input type="text" id="req-name" class="form-control" placeholder="Ej: Dr. Juan Pérez" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="req-detail">Detalle de la Tarea / Corrección / Función *</label>
+              <textarea id="req-detail" class="form-control" placeholder="Describa claramente lo que solicita u observa en el sistema..." rows="5" required></textarea>
+            </div>
+            
+            <button type="submit" id="btn-submit-request" class="action-btn" style="width: 100%; padding: 0.75rem; margin-top: 1rem;">Enviar Propuesta</button>
+          </form>
+          
+          <div id="request-success-msg" style="display: none; text-align: center; margin-top: 1.5rem; padding: 1.5rem; background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; border-radius: var(--radius-sm);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+            <strong>¡Propuesta enviada con éxito!</strong>
+            <p style="font-size: 0.85rem; margin-top: 0.3rem; color: #14532d;">Ha sido registrada en la planilla y quedará bajo evaluación del administrador de la OGA.</p>
+            <button type="button" id="btn-new-request" class="action-btn secondary" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.8rem;">Enviar otra propuesta</button>
           </div>
         </div>
       </section>
