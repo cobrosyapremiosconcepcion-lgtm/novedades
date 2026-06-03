@@ -1,3 +1,7 @@
 {
-  "categorias": []
+  "categorias": [
+    {
+      "nombre": "Area Postulatoria"
+    }
+  ]
 }
