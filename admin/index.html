@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrador de Novedades | OGA de Cobros y Apremios</title>
+  
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- Encabezado del Panel -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <img src="../assets/logo.jpg" alt="Logo Poder Judicial de Tucumán" class="brand-logo">
+      </div>
+      <div class="nav-links">
+        <span id="connection-status" class="connection-badge danger">Desconectado</span>
+        <button id="btn-disconnect" class="nav-btn" style="display: none;">Salir del Panel</button>
+        <a href="../index.html" class="nav-btn secondary">Ver Web Pública</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido del Dashboard -->
+  <main class="main-wrapper">
+    
+    <!-- Barra de Pestañas -->
+    <nav class="admin-nav-bar">
+      <button class="tab-btn active" data-tab="creds">🔑 Credenciales de Conexión</button>
+      <button class="tab-btn" data-tab="news" disabled>📰 Novedades Publicadas</button>
+      <button class="tab-btn" data-tab="categories" disabled>🏷️ Categorías de Filtros</button>
+    </nav>
+
+    <!-- Pestaña 1: Credenciales -->
+    <section id="creds-tab" class="tab-content active">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2>Configuración de Conexión a GitHub</h2>
+        </div>
+        
+        <div id="config-warning" class="warning-box">
+          <strong>Atención:</strong> Para poder publicar y gestionar las novedades de la web de forma gratuita, debe configurar las credenciales de su repositorio de GitHub. Los datos se guardan de forma local y segura en su navegador.
+        </div>
+
+        <form id="config-form">
+          <div class="form-group">
+            <label for="user-input">Usuario de GitHub (Propietario del Repositorio)</label>
+            <input type="text" id="user-input" class="form-control" placeholder="Ej: mi-usuario-github" required>
+            <p class="form-help">Tu nombre de usuario de GitHub.</p>
+          </div>
+          <div class="form-group">
+            <label for="repo-input">Nombre del Repositorio</label>
+            <input type="text" id="repo-input" class="form-control" placeholder="Ej: oga-novedades" required>
+            <p class="form-help">El nombre del repositorio donde subiste la web.</p>
+          </div>
+          <div class="form-group">
+            <label for="token-input">GitHub Personal Access Token (PAT)</label>
+            <input type="password" id="token-input" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
+            <p class="form-help">Token con permisos de escritura (alcance <code>repo</code> o <code>public_repo</code>) generado en GitHub.com.</p>
+          </div>
+          <button type="submit" class="action-btn">Conectar y Validar Repositorio</button>
+        </form>
+      </div>
+      
+      <div class="admin-card">
+        <h2>¿Cómo generar tu Token de Acceso (PAT)?</h2>
+        <div style="margin-top: 1rem; font-size: 0.9rem;">
+          <ol style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li>Iniciá sesión en <strong>GitHub.com</strong>.</li>
+            <li>Hacé clic en tu foto de perfil arriba a la derecha e ingresá a <strong>Settings</strong> (Configuración).</li>
+            <li>En el menú de la izquierda, navegá hasta el fondo y hacé clic en <strong>Developer Settings</strong>.</li>
+            <li>Seleccioná <strong>Personal access tokens</strong> -> <strong>Tokens (classic)</strong>.</li>
+            <li>Hacé clic en <strong>Generate new token</strong> -> <strong>Generate new token (classic)</strong>.</li>
+            <li>Colocale una nota identificatoria (ej: <code>Panel OGA</code>) y marcá la casilla de verificación <strong>repo</strong> completa (o <code>public_repo</code> si tu repositorio es público).</li>
+            <li>Hacé clic en <strong>Generate token</strong> al final de la página y copiá el código generado (empieza con <code>ghp_</code>). <em>¡No lo pierdas porque no se vuelve a mostrar!</em></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pestaña 2: Novedades -->
+    <section id="news-tab" class="tab-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2>Gestión de Novedades de la OGA</h2>
+          <button id="btn-add-news" class="action-btn">＋ Agregar Novedad</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="news-table-body">
+              <!-- Renderizado por js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pestaña 3: Categorías -->
+    <section id="categories-tab" class="tab-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2>Configuración de Filtros (Categorías)</h2>
+        </div>
+        
+        <div class="warning-box" style="background: #e0f2fe; border-color: #bae6fd; border-left-color: #0284c7; color: #0369a1;">
+          <strong>Integridad de datos activa:</strong> Si modificás el nombre de una categoría existente, el sistema buscará todas las novedades publicadas y actualizará automáticamente su categoría para evitar que queden desvinculadas.
+        </div>
+
+        <div class="categories-container">
+          <form id="add-category-form" class="add-category-box">
+            <input type="text" id="new-category-input" class="form-control" placeholder="Ej: Acordadas" required>
+            <button type="submit" class="action-btn">＋ Añadir Categoría</button>
+          </form>
+
+          <ul id="categories-list" class="categories-list-ul">
+            <!-- Renderizado por js/admin.js -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Agregar/Editar Novedades -->
+  <div id="news-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modal-title">Nueva Novedad</h3>
+      </div>
+      <form id="news-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="news-title">Título de la Novedad *</label>
+            <input type="text" id="news-title" class="form-control" placeholder="Ej: Nuevas planillas de liquidación..." required>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="news-date">Fecha de Publicación *</label>
+              <input type="date" id="news-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="news-category">Categoría (Filtro) *</label>
+              <select id="news-category" class="form-control" required>
+                <!-- Se poblará dinámicamente con las categorías de categorias.json -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="news-summary">Resumen Breve *</label>
+            <input type="text" id="news-summary" class="form-control" placeholder="Vista previa rápida (una línea) que aparece en la portada..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="news-content">Contenido Detallado *</label>
+            <textarea id="news-content" class="form-control" placeholder="Contenido completo de la noticia. Soporta formato Markdown simple (ej: **negrita**, listas con * e hilos de títulos ###)" required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="news-attach-name">Nombre del Adjunto (Opcional)</label>
+              <input type="text" id="news-attach-name" class="form-control" placeholder="Ej: Resolucion_12_2026.pdf">
+            </div>
+            <div class="form-group">
+              <label for="news-attach-url">URL del Adjunto / Enlace (Opcional)</label>
+              <input type="url" id="news-attach-url" class="form-control" placeholder="Ej: https://tudominio.com/archivos/doc.pdf">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-news" class="action-btn secondary">Cancelar</button>
+          <button type="submit" class="action-btn">Publicar Novedad</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenedor Toast para Notificaciones Flotantes -->
+  <div id="toast" class="toast">
+    <span id="toast-message">Guardando cambios...</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/admin.js"></script>
+</body>
+</html>

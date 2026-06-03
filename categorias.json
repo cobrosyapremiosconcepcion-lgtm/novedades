@@ -1,0 +1,16 @@
+{
+  "categorias": [
+    {
+      "nombre": "Procedimientos"
+    },
+    {
+      "nombre": "Resoluciones"
+    },
+    {
+      "nombre": "Instructivos"
+    },
+    {
+      "nombre": "Avisos Urgentes"
+    }
+  ]
+}

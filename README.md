@@ -1,66 +1,66 @@
-# Portal de Novedades - OGA de Cobros y Apremios
+# Portal de Novedades - OGA de Cobros y Apremios Concepción
 
-Este proyecto es una plataforma web autoadministrable diseñada especialmente para la **Oficina de Gestión Asociada (OGA) de Cobros y Apremios** del Poder Judicial de Tucumán. 
+Este es el proyecto oficial de novedades y anuncios autoadministrable para la **Oficina de Gestión Asociada (OGA) de Cobros y Apremios** del Centro Judicial de Concepción, Poder Judicial de Tucumán.
 
-Combina un diseño institucional premium, limpio y ágil con la potencia de **Decap CMS** para permitir publicar y editar novedades de forma visual y gratuita, sin requerir bases de datos ni servidores pagos.
-
----
-
-## 🚀 Guía de Despliegue Paso a Paso (100% Gratis)
-
-Para poner en funcionamiento el sitio y el panel de administración, seguí estos sencillos pasos:
-
-### Paso 1: Subir el proyecto a GitHub
-1. Creá una cuenta gratuita en [GitHub](https://github.com/) si aún no tenés una.
-2. Creá un nuevo repositorio en blanco (puede ser público o privado, recomendamos **público** para facilitar la publicación rápida en el hosting). Nombralo por ejemplo: `oga-novedades`.
-3. Subí todos los archivos de este directorio a tu nuevo repositorio de GitHub.
-
-### Paso 2: Crear el sitio en Netlify
-1. Entrá a [Netlify](https://www.netlify.com/) y creá una cuenta gratuita (recomendamos iniciar sesión con tu cuenta de GitHub para mayor rapidez).
-2. Hacé clic en el botón **"Add new site"** (Añadir nuevo sitio) y seleccioná **"Import an existing project"** (Importar un proyecto existente).
-3. Elegí **GitHub** como proveedor e inicia sesión si te lo solicita.
-4. Seleccioná tu repositorio `oga-novedades`.
-5. En la configuración de construcción:
-   - **Build command:** *Dejalo en blanco (no se requiere compilar nada)*.
-   - **Publish directory:** `.` (un solo punto, lo que indica la carpeta raíz).
-6. Hacé clic en **"Deploy oga-novedades"** (Desplegar sitio). En un par de minutos, Netlify te dará una dirección web pública gratuita (ej: `https://oga-novedades.netlify.app`).
-
-### Paso 3: Configurar la Autenticación (Netlify Identity)
-Este paso es crucial para habilitar el inicio de sesión seguro de los administradores sin escribir código:
-1. En el panel de control de tu sitio en Netlify, ve a la pestaña **"Site configuration"** (Configuración del sitio).
-2. Buscá en el menú lateral izquierdo la sección **"Identity"** (Identidad) y hacé clic en **"Enable Identity"** (Habilitar Identidad).
-3. Desplázate hacia abajo hasta la sección **"Services"** (Servicios) -> **"Git Gateway"** y hacé clic en **"Enable Git Gateway"** (Habilitar Git Gateway). Te pedirá autorización para conectarse a tu cuenta de GitHub; dale permisos. Esto le permite a Netlify subir los cambios del CMS directamente a tu repositorio.
-4. Volvé arriba a la pestaña de **"Identity"** y en la sección de **"Registration preferences"** (Preferencias de registro), cambiala a **"Invite only"** (Solo invitación) para evitar que cualquier persona ajena a la OGA pueda registrarse como administrador.
-
-### Paso 4: Crear tu Cuenta de Administrador
-1. En la misma pestaña de **"Identity"** en Netlify, hacé clic en el botón **"Invite users"** (Invitar usuarios).
-2. Ingresá tu correo electrónico (o los correos de las personas encargadas de publicar novedades en la OGA).
-3. Recibirás un correo electrónico de invitación con un enlace. **Hacé clic en el enlace**.
-4. Te redirigirá a la web oficial y se abrirá una ventana emergente para que elijas una contraseña. Una vez creada, ¡tu cuenta estará activa!
+Cuenta con un diseño premium y adaptativo inspirado en la gráfica del portal de Acordadas del Poder Judicial y utiliza un **Panel de Administración Serverless Propio** para la gestión de contenidos directamente conectado con la API de GitHub, permitiendo una operatividad **100% gratuita, ilimitada y para siempre**.
 
 ---
 
-## ✍️ Cómo publicar y administrar noticias
+## 🚀 Guía de Despliegue en Internet (100% Gratis)
 
-Una vez completado el despliegue:
-1. Entrá a la URL de tu sitio web agregando `/admin/` al final (ejemplo: `https://tu-sitio.netlify.app/admin/`).
-2. Iniciá sesión con tu correo y contraseña.
-3. Verás una lista con las novedades cargadas actualmente (provenientes de `noticias.json`).
-4. Hacé clic en el botón **"New Novedad OGA"** (o en cualquiera de las noticias para editarla).
-5. Completá el formulario visual:
-   - Redactá el texto usando negrita, listas, etc.
-   - Podés subir un archivo PDF adjunto (como una resolución) directamente desde el cargador de archivos del panel.
-6. Hacé clic en **"Publish"** (Publicar) arriba a la derecha.
+Para subir la web y poner en funcionamiento el panel de control, seguí estos sencillos pasos:
 
-*Netlify recibirá el cambio en GitHub, actualizará el archivo `noticias.json` automáticamente y en menos de 1 minuto los cambios estarán visibles para todo el público en tu web principal.*
+### Paso 1: Subir tus archivos a GitHub
+1. Iniciá sesión en [GitHub.com](https://github.com/) (creá una cuenta gratis si no la tenés).
+2. Hacé clic arriba a la derecha en el botón **"+"** y elegí **"New repository"** (Nuevo repositorio).
+3. Nombralo como prefieras (ejemplo: `novedades-oga`).
+4. Elegí si querés que sea **Público** o **Privado** (recomendamos **Público** para facilitar la publicación en un clic). Hacé clic en **"Create repository"**.
+5. En la pantalla que sigue, seleccioná el enlace **"uploading an existing file"** (subir archivos existentes).
+6. Arrastrá y soltá **todos** los archivos de este directorio local (las carpetas `css`, `js`, `admin`, `assets`, y los archivos `index.html`, `noticias.json`, `categorias.json`, etc.).
+7. Al finalizar la carga, presioná el botón verde **"Commit changes"** para guardar.
+
+### Paso 2: Activar la Web Gratis (GitHub Pages)
+1. Dentro de tu repositorio en GitHub, hacé clic en la pestaña ⚙️ **Settings** (Configuración) en el menú superior.
+2. En el menú lateral izquierdo, ingresá a la sección **"Pages"**.
+3. En la sección **Build and deployment**:
+   - **Source:** Elegí `Deploy from a branch` (Desplegar desde una rama).
+   - **Branch:** Cambialo de *None* a `main` y la carpeta a `/ (root)`.
+4. Hacé clic en **Save** (Guardar).
+5. ¡Listo! En menos de 1 minuto GitHub te dará el enlace público de tu sitio en la parte superior (ej: `https://tu-usuario.github.io/novedades-oga/`).
 
 ---
 
-## 🛠️ Estructura de Archivos del Proyecto
-*   `index.html`: Portal público de novedades adaptado al fuero.
-*   `noticias.json`: Archivo de base de datos que guarda las noticias creadas.
-*   `css/styles.css`: Estilos visuales institucionales responsivos de alta calidad.
-*   `js/app.js`: Lógica de carga, búsqueda interactiva y filtros en el frontend.
-*   `admin/index.html`: Carga la interfaz administrativa de Decap CMS.
-*   `admin/config.yml`: Reglas de funcionamiento y campos del editor de Decap CMS.
-*   `assets/uploads/`: Carpeta destinada a guardar los PDFs y recursos adjuntos que se suban.
+## 🔑 Cómo entrar al Panel Administrador y Configurar tu Token (PAT)
+
+El administrador de la web no requiere instalar nada en tu computadora, ni configurar servidores o bases de datos complejas. Funciona 100% en tu navegador y se conecta de forma segura con tu repositorio.
+
+### Paso 1: Generar tu Clave de Escritura (Token PAT)
+Para que el panel pueda escribir en tu repositorio, GitHub requiere que generes una clave personal temporal:
+1. En GitHub.com, hacé clic en tu foto de perfil arriba a la derecha e ingresá a **Settings** (Configuración).
+2. Bajá en el menú de la izquierda al final y hacé clic en **"Developer Settings"**.
+3. Seleccioná **"Personal access tokens"** -> **"Tokens (classic)"**.
+4. Hacé clic en el botón **"Generate new token"** -> **"Generate new token (classic)"**.
+5. Colocá una descripción en *Note* (ej: `Panel Novedades OGA`).
+6. En la lista de permisos, marcá la primera casilla **"repo"** completa (esto da permiso de subir archivos al repositorio).
+7. Hacé clic abajo de todo en **"Generate token"**.
+8. **Copiá el código generado** (comienza con `ghp_`). *Guardalo bien ya que GitHub no lo vuelve a mostrar.*
+
+### Paso 2: Configurar el Administrador
+1. Entrá a tu web agregando `/admin/` al final de la URL (ejemplo: `https://tu-usuario.github.io/novedades-oga/admin/`).
+2. En la pestaña de **Credenciales de Conexión**, completá los datos:
+   - **Usuario:** Tu nombre de usuario de GitHub.
+   - **Repositorio:** El nombre exacto que le pusiste al repositorio (ej: `novedades-oga`).
+   - **Token (PAT):** Pegá la clave que generaste en el paso anterior.
+3. Hacé clic en **"Conectar y Validar Repositorio"**. 
+
+El sistema validará tus credenciales y quedará conectado de forma permanente en ese navegador (no tendrás que volver a introducirlas). Las pestañas de **Novedades** y **Categorías** quedarán desbloqueadas.
+
+---
+
+## ✍️ Gestión de Novedades e Integridad de Categorías
+
+El panel propio te ofrece herramientas avanzadas para la gestión de contenidos:
+
+*   **Gestión de Novedades (CRUD Completo):** Podés agregar nuevas novedades mediante un formulario visual, editar noticias publicadas anteriormente y eliminar las que ya no correspondan. Soporta autocompletado de fecha, subida y enlace de archivos PDF (como resoluciones) y redacción en Markdown.
+*   **Gestión de Categorías Dinámicas:** En la pestaña **Categorías** podés agregar nuevos filtros, modificarlos o eliminarlos.
+*   **Integridad de Datos:** Si cambiás el nombre de una categoría existente (por ejemplo, de `"Procedimientos"` a `"Procedimientos Digitales"`), el sistema **actualizará de manera automática** la categoría de todas las novedades publicadas que usaran la anterior versión para evitar inconsistencias en la base de datos pública.
