@@ -11,10 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let newsData = [];
   let categoriesData = [];
+  let manualsData = [];
   let newsSha = '';
   let categoriesSha = '';
+  let manualsSha = '';
 
   let editingNewsIndex = null; // null = creando, número = editando
+  let editingManualIndex = null; // null = creando, número = editando
 
   // --- Elementos del DOM ---
   const tabButtons = document.querySelectorAll('.tab-btn');
@@ -43,6 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoriesList = document.getElementById('categories-list');
   const addCategoryForm = document.getElementById('add-category-form');
   const newCategoryInput = document.getElementById('new-category-input');
+
+  // Manuales
+  const manualsTableBody = document.getElementById('manuals-table-body');
+  const btnAddManual = document.getElementById('btn-add-manual');
+  const manualsModal = document.getElementById('manuals-modal');
+  const manualsForm = document.getElementById('manuals-form');
+  const manualModalTitle = document.getElementById('manual-modal-title');
+  const btnCancelManual = document.getElementById('btn-cancel-manual');
+  const btnAddStep = document.getElementById('btn-add-step');
+  const manualStepsContainer = document.getElementById('manual-steps-container');
 
   // Toasts de Notificación
   const toast = document.getElementById('toast');
@@ -230,11 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadDashboardData() {
     newsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Cargando información desde GitHub...</td></tr>';
     categoriesList.innerHTML = '<li class="list-empty">Cargando categorías...</li>';
+    if (manualsTableBody) {
+      manualsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Cargando instructivos desde GitHub...</td></tr>';
+    }
 
     try {
-      const [newsFile, categoriesFile] = await Promise.all([
+      const [newsFile, categoriesFile, manualsFile] = await Promise.all([
         fetchFile('noticias.json'),
-        fetchFile('categorias.json')
+        fetchFile('categorias.json'),
+        fetchFile('manuales.json')
       ]);
 
       newsData = newsFile.jsonData.novedades || [];
@@ -243,18 +260,26 @@ document.addEventListener('DOMContentLoaded', () => {
       categoriesData = categoriesFile.jsonData.categorias || [];
       categoriesSha = categoriesFile.sha;
 
-      // Ordenar novedades por fecha desc (más recientes primero)
+      manualsData = manualsFile.jsonData.manuales || [];
+      manualsSha = manualsFile.sha;
+
+      // Ordenar por fecha desc (más recientes primero)
       newsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      manualsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
       renderNewsTable();
       renderCategoriesList();
       renderCategorySelect();
+      renderManualsTable();
 
     } catch (e) {
       console.error(e);
       showToast('Error de sincronización con GitHub.', true);
       newsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ef4444;">Error al cargar novedades.</td></tr>';
       categoriesList.innerHTML = '<li class="list-empty" style="color: #ef4444;">Error al cargar categorías.</li>';
+      if (manualsTableBody) {
+        manualsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ef4444;">Error al cargar instructivos.</td></tr>';
+      }
     }
   }
 
@@ -627,6 +652,229 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Operaciones CRUD de Manuales e Instructivos ---
+
+  // Tabla de Manuales
+  function renderManualsTable() {
+    manualsTableBody.innerHTML = '';
+    if (manualsData.length === 0) {
+      manualsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay manuales cargados. ¡Creá el primero!</td></tr>';
+      return;
+    }
+
+    manualsData.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' };
+      const formattedDate = new Date(item.fecha).toLocaleDateString('es-AR', dateOptions);
+      const stepsCount = item.pasos ? item.pasos.length : 0;
+
+      tr.innerHTML = `
+        <td class="td-title"><strong>${item.titulo}</strong></td>
+        <td><span class="table-badge">${stepsCount} pasos</span></td>
+        <td>${formattedDate}</td>
+        <td class="table-actions">
+          <button class="action-btn edit-manual-btn" data-index="${index}">Editar</button>
+          <button class="action-btn delete-manual-btn" data-index="${index}">Eliminar</button>
+        </td>
+      `;
+      manualsTableBody.appendChild(tr);
+    });
+
+    manualsTableBody.querySelectorAll('.edit-manual-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.currentTarget.getAttribute('data-index'));
+        openManualModal(index);
+      });
+    });
+
+    manualsTableBody.querySelectorAll('.delete-manual-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.currentTarget.getAttribute('data-index'));
+        deleteManualItem(index);
+      });
+    });
+  }
+
+  // Agregar fila de paso en el formulario modal
+  function addStepRow(tituloVal = '', descVal = '') {
+    const stepCount = manualStepsContainer.querySelectorAll('.step-row').length + 1;
+    const row = document.createElement('div');
+    row.className = 'step-row';
+    row.style.cssText = 'display: grid; grid-template-columns: 30px 1fr auto; gap: 0.8rem; align-items: start; border: 1px solid var(--border-color); padding: 0.8rem; border-radius: var(--radius-sm); background: var(--bg-color); margin-bottom: 0.5rem;';
+    
+    row.innerHTML = `
+      <div class="step-num" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-light); text-align: center; margin-top: 0.4rem;">${stepCount}</div>
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        <input type="text" class="form-control step-title-input" placeholder="Título del paso (ej: Firma digital)" value="${tituloVal}" required>
+        <textarea class="form-control step-desc-input" placeholder="Explicación del paso..." rows="2" required>${descVal}</textarea>
+      </div>
+      <button type="button" class="action-btn delete-btn remove-step-btn" style="padding: 0.3rem 0.5rem; font-size: 0.75rem; margin-top: 0.2rem;">✕</button>
+    `;
+    
+    row.querySelector('.remove-step-btn').addEventListener('click', () => {
+      row.remove();
+      recalculateStepNumbers();
+    });
+    
+    manualStepsContainer.appendChild(row);
+  }
+
+  function recalculateStepNumbers() {
+    const rows = manualStepsContainer.querySelectorAll('.step-row');
+    rows.forEach((row, idx) => {
+      row.querySelector('.step-num').textContent = idx + 1;
+    });
+  }
+
+  btnAddStep.addEventListener('click', () => addStepRow());
+
+  // Abrir modal de manual
+  function openManualModal(index = null) {
+    editingManualIndex = index;
+    manualStepsContainer.innerHTML = '';
+    
+    if (index === null) {
+      manualModalTitle.textContent = 'Nuevo Instructivo';
+      manualsForm.reset();
+      document.getElementById('manual-date').value = new Date().toISOString().substring(0, 10);
+      addStepRow(); // Añadir primer paso en blanco por defecto
+    } else {
+      manualModalTitle.textContent = 'Editar Instructivo';
+      const item = manualsData[index];
+      document.getElementById('manual-title').value = item.titulo;
+      document.getElementById('manual-date').value = item.fecha;
+      document.getElementById('manual-desc').value = item.descripcion;
+      
+      if (item.pasos && item.pasos.length > 0) {
+        const sortedSteps = [...item.pasos].sort((a, b) => a.numero - b.numero);
+        sortedSteps.forEach(paso => {
+          addStepRow(paso.titulo, paso.descripcion);
+        });
+      } else {
+        addStepRow();
+      }
+    }
+    manualsModal.classList.add('active');
+  }
+
+  function closeManualModal() {
+    manualsModal.classList.remove('active');
+    editingManualIndex = null;
+  }
+
+  btnAddManual.addEventListener('click', () => openManualModal(null));
+  btnCancelManual.addEventListener('click', closeManualModal);
+
+  // Formulario Guardar Manual
+  manualsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('manual-title').value.trim();
+    const date = document.getElementById('manual-date').value;
+    const desc = document.getElementById('manual-desc').value.trim();
+
+    const stepRows = manualStepsContainer.querySelectorAll('.step-row');
+    const steps = [];
+    
+    stepRows.forEach((row, idx) => {
+      const stepTitle = row.querySelector('.step-title-input').value.trim();
+      const stepDesc = row.querySelector('.step-desc-input').value.trim();
+      
+      if (stepTitle && stepDesc) {
+        steps.push({
+          numero: idx + 1,
+          titulo: stepTitle,
+          descripcion: stepDesc
+        });
+      }
+    });
+
+    if (!title || !date || !desc) {
+      showToast('Por favor, complete todos los campos obligatorios.', true);
+      return;
+    }
+
+    if (steps.length === 0) {
+      showToast('Debe agregar al menos un paso al instructivo.', true);
+      return;
+    }
+
+    const payload = {
+      id: editingManualIndex === null ? String(Date.now()) : manualsData[editingManualIndex].id,
+      titulo: title,
+      descripcion: desc,
+      fecha: date,
+      pasos: steps
+    };
+
+    showToast('Subiendo manual a GitHub...');
+    closeManualModal();
+
+    try {
+      const freshFile = await fetchFile('manuales.json');
+      let currentManuals = freshFile.jsonData.manuales || [];
+
+      if (editingManualIndex === null) {
+        currentManuals.push(payload);
+        commitMsg = `Añadir instructivo: "${title}"`;
+      } else {
+        const idToFind = manualsData[editingManualIndex].id;
+        const indexInFresh = currentManuals.findIndex(m => m.id === idToFind);
+        if (indexInFresh !== -1) {
+          currentManuals[indexInFresh] = payload;
+        } else {
+          currentManuals[editingManualIndex] = payload;
+        }
+        commitMsg = `Editar instructivo: "${title}"`;
+      }
+
+      manualsSha = await saveFile('manuales.json', { manuales: currentManuals }, freshFile.sha, commitMsg);
+      
+      manualsData = currentManuals;
+      manualsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      renderManualsTable();
+      showToast('¡Instructivo publicado con éxito!');
+
+    } catch (error) {
+      console.error(error);
+      showToast('Error al guardar en GitHub.', true);
+    }
+  });
+
+  // Eliminar Manual
+  async function deleteManualItem(index) {
+    const item = manualsData[index];
+    if (!confirm(`¿Está seguro de que desea eliminar el instructivo: "${item.titulo}"?`)) {
+      return;
+    }
+
+    showToast('Eliminando instructivo en GitHub...');
+
+    try {
+      const freshFile = await fetchFile('manuales.json');
+      let currentManuals = freshFile.jsonData.manuales || [];
+      
+      const idToFind = item.id;
+      const indexInFresh = currentManuals.findIndex(m => m.id === idToFind);
+      if (indexInFresh !== -1) {
+        currentManuals.splice(indexInFresh, 1);
+      } else {
+        currentManuals.splice(index, 1);
+      }
+
+      manualsSha = await saveFile('manuales.json', { manuales: currentManuals }, freshFile.sha, `Eliminar instructivo: "${item.titulo}"`);
+      
+      manualsData = currentManuals;
+      manualsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      renderManualsTable();
+      showToast('Instructivo eliminado.');
+
+    } catch (e) {
+      console.error(e);
+      showToast('Error al eliminar en GitHub.', true);
+    }
+  }
+
   // --- Lógica del Sistema de Pestañas (Tabs) ---
   function switchTab(tabId) {
     tabButtons.forEach(btn => {
@@ -652,6 +900,26 @@ document.addEventListener('DOMContentLoaded', () => {
       switchTab(tabId);
     });
   });
+
+  // --- Lógica de cambio de tema (Claro / Oscuro) ---
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = themeToggle ? themeToggle.querySelector('.theme-icon') : null;
+
+  // Cargar tema guardado en localStorage
+  const savedTheme = localStorage.getItem('oga_theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    if (themeIcon) themeIcon.textContent = '☀️';
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      localStorage.setItem('oga_theme', isDark ? 'dark' : 'light');
+      if (themeIcon) themeIcon.textContent = isDark ? '☀️' : '🌙';
+    });
+  }
 
   // --- Inicialización y Chequeo de Sesión ---
   const isLogged = sessionStorage.getItem('oga_admin_logged') === 'true';

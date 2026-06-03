@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let newsData = [];
   let currentCategory = 'todos';
   let searchQuery = '';
+  let manualsData = [];
+  let manualSearchQuery = '';
 
   const newsList = document.getElementById('news-list');
   const searchInput = document.getElementById('search-input');
@@ -10,41 +12,80 @@ document.addEventListener('DOMContentLoaded', () => {
   const urgentTitle = document.getElementById('urgent-title');
   const urgentDesc = document.getElementById('urgent-desc');
 
-  // 1. Cargar las novedades y categorías desde sus respectivos archivos JSON
-  async function loadNews() {
+  // Elementos de Pestañas
+  const mainTabButtons = document.querySelectorAll('.main-tab-btn');
+  const mainTabContents = document.querySelectorAll('.main-tab-content');
+
+  // Elementos de Manuales
+  const manualsGrid = document.getElementById('manuals-grid');
+  const manualSearchInput = document.getElementById('manual-search-input');
+  const manualsListContainer = document.getElementById('manuals-list-container');
+  const manualDetailContainer = document.getElementById('manual-detail-container');
+  const btnBackToManuals = document.getElementById('btn-back-to-manuals');
+  const manualDetailTitle = document.getElementById('manual-detail-title');
+  const manualDetailDesc = document.getElementById('manual-detail-desc');
+  const manualStepsTimeline = document.getElementById('manual-steps-timeline');
+
+  // Pestañas Principales (Novedades vs Manuales)
+  mainTabButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      mainTabButtons.forEach(b => b.classList.remove('active'));
+      mainTabContents.forEach(c => c.classList.remove('active'));
+      
+      e.currentTarget.classList.add('active');
+      const tabId = e.currentTarget.getAttribute('data-main-tab');
+      document.getElementById(`${tabId}-tab-content`).classList.add('active');
+      
+      // Resetear vista de detalle si volvemos a manuales
+      if (tabId === 'manuals') {
+        showManualsList();
+      }
+    });
+  });
+
+  // 1. Cargar las novedades, categorías y manuales desde sus respectivos archivos JSON
+  async function loadData() {
     try {
       const cacheBuster = `t=${Date.now()}`;
-      // Cargar ambos archivos JSON en paralelo para mayor velocidad
-      const [newsResponse, categoriesResponse] = await Promise.all([
+      // Cargar todos los archivos JSON en paralelo para mayor velocidad
+      const [newsResponse, categoriesResponse, manualsResponse] = await Promise.all([
         fetch(`noticias.json?${cacheBuster}`),
-        fetch(`categorias.json?${cacheBuster}`)
+        fetch(`categorias.json?${cacheBuster}`),
+        fetch(`manuales.json?${cacheBuster}`)
       ]);
 
       if (!newsResponse.ok) throw new Error('No se pudo cargar el archivo de novedades.');
       if (!categoriesResponse.ok) throw new Error('No se pudo cargar el archivo de categorías.');
+      if (!manualsResponse.ok) throw new Error('No se pudo cargar el archivo de manuales.');
       
       const newsDataRaw = await newsResponse.json();
       const categoriesDataRaw = await categoriesResponse.json();
+      const manualsDataRaw = await manualsResponse.json();
       
       newsData = newsDataRaw.novedades || [];
       const categoriesData = categoriesDataRaw.categorias || [];
+      manualsData = manualsDataRaw.manuales || [];
       
       // Ordenar por fecha descendente (más recientes primero)
       newsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      manualsData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
       // Renderizar los filtros dinámicos y la alerta
       renderCategories(categoriesData);
       setupUrgentAlert();
       renderNews();
+      renderManuals();
     } catch (error) {
-      console.error('Error al cargar novedades o categorías:', error);
-      newsList.innerHTML = `
+      console.error('Error al cargar datos:', error);
+      const errMsg = `
         <div class="no-results">
           <div class="no-results-icon">⚠️</div>
           <h3>Error de Conexión</h3>
           <p>No pudimos cargar la información del servidor. Intente recargar la página.</p>
         </div>
       `;
+      if (newsList) newsList.innerHTML = errMsg;
+      if (manualsGrid) manualsGrid.innerHTML = errMsg;
     }
   }
 
@@ -244,6 +285,126 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200);
   });
 
+  // 7. Lógica de cambio de tema (Claro / Oscuro)
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = themeToggle ? themeToggle.querySelector('.theme-icon') : null;
+
+  // Cargar tema guardado en localStorage
+  const savedTheme = localStorage.getItem('oga_theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    if (themeIcon) themeIcon.textContent = '☀️';
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      localStorage.setItem('oga_theme', isDark ? 'dark' : 'light');
+      if (themeIcon) themeIcon.textContent = isDark ? '☀️' : '🌙';
+    });
+  }
+
+  // --- Lógica de Renderizado y Búsqueda de Manuales ---
+  function showManualsList() {
+    manualsListContainer.style.display = 'block';
+    manualDetailContainer.style.display = 'none';
+  }
+
+  function showManualDetail(manual) {
+    manualsListContainer.style.display = 'none';
+    manualDetailContainer.style.display = 'block';
+
+    manualDetailTitle.textContent = manual.titulo;
+    manualDetailDesc.textContent = manual.descripcion;
+
+    manualStepsTimeline.innerHTML = '';
+    if (!manual.pasos || manual.pasos.length === 0) {
+      manualStepsTimeline.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Este instructivo no tiene pasos cargados aún.</p>';
+      return;
+    }
+
+    const sortedSteps = [...manual.pasos].sort((a, b) => a.numero - b.numero);
+
+    sortedSteps.forEach(paso => {
+      const stepItem = document.createElement('div');
+      stepItem.className = 'timeline-item';
+      
+      stepItem.innerHTML = `
+        <div class="timeline-badge">${paso.numero}</div>
+        <div class="timeline-content">
+          <h3>${paso.titulo}</h3>
+          <p>${paso.descripcion}</p>
+        </div>
+      `;
+      manualStepsTimeline.appendChild(stepItem);
+    });
+  }
+
+  if (btnBackToManuals) {
+    btnBackToManuals.addEventListener('click', showManualsList);
+  }
+
+  function renderManuals() {
+    if (!manualsGrid) return;
+
+    const filteredManuals = manualsData.filter(item => {
+      const textToSearch = `${item.titulo} ${item.descripcion}`.toLowerCase();
+      return textToSearch.includes(manualSearchQuery.toLowerCase());
+    });
+
+    manualsGrid.innerHTML = '';
+
+    if (filteredManuals.length === 0) {
+      manualsGrid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">🔍</div>
+          <h3>Sin instructivos</h3>
+          <p>No encontramos manuales que coincidan con la búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filteredManuals.forEach(manual => {
+      const card = document.createElement('article');
+      card.className = 'news-card';
+      card.style.cursor = 'pointer';
+      
+      const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+      const formattedDate = new Date(manual.fecha).toLocaleDateString('es-AR', dateOptions);
+
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="badge instructivos">Instructivo</span>
+          <span class="news-date">${formattedDate}</span>
+        </div>
+        <h2>${manual.titulo}</h2>
+        <p class="news-summary">${manual.descripcion}</p>
+        <div class="news-actions">
+          <button class="read-more-btn" style="color: var(--primary-light);">
+            <span>Ver paso a paso</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      `;
+
+      card.addEventListener('click', () => showManualDetail(manual));
+      manualsGrid.appendChild(card);
+    });
+  }
+
+  if (manualSearchInput) {
+    let manualSearchTimeout;
+    manualSearchInput.addEventListener('input', (e) => {
+      clearTimeout(manualSearchTimeout);
+      manualSearchTimeout = setTimeout(() => {
+        manualSearchQuery = e.target.value;
+        renderManuals();
+      }, 200);
+    });
+  }
+
   // Inicializar carga
-  loadNews();
+  loadData();
 });

@@ -1,0 +1,32 @@
+{
+  "manuales": [
+    {
+      "id": "1717462800000",
+      "titulo": "Mandamiento de Ejecución y Embargo",
+      "descripcion": "Guía oficial y pasos detallados para la correcta confección y carga de los mandamientos de cobro y embargo judicial en el sistema.",
+      "fecha": "2026-06-03",
+      "pasos": [
+        {
+          "numero": 1,
+          "titulo": "Verificación del Expediente",
+          "descripcion": "Revisar que la liquidación esté firme y consentida por el juzgado. Confirmar que el capital reclamado coincida con la planilla aprobada."
+        },
+        {
+          "numero": 2,
+          "titulo": "Ingreso al Portal del Poder Judicial",
+          "descripcion": "Acceder al portal con tus credenciales institucionales habilitadas y seleccionar el módulo de mandamientos electrónicos."
+        },
+        {
+          "numero": 3,
+          "titulo": "Carga de Datos Obligatorios",
+          "descripcion": "Cargar los datos del deudor (DNI/CUIT), los autorizados a intervenir, el oficial de justicia a cargo, el monto nominal y los montos presupuestados para costas e intereses."
+        },
+        {
+          "numero": 4,
+          "titulo": "Generación y Envío a Firma",
+          "descripcion": "Generar la vista previa en formato PDF para constatar la ausencia de errores materiales. Una vez confirmado, enviar el mandamiento a la bandeja del juez para su firma digital."
+        }
+      ]
+    }
+  ]
+}

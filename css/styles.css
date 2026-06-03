@@ -20,6 +20,19 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* Modo Oscuro Premium */
+body.dark-theme {
+  --primary-color: #e2e8f0;      /* Claro para contraste en fondo oscuro */
+  --primary-light: #60a5fa;      /* Azul cian brillante */
+  --primary-dark: #3b82f6;
+  --accent-color: #f59e0b;
+  --bg-color: #0f172a;          /* Fondo oscuro Slate 900 */
+  --card-bg: #1e293b;           /* Tarjetas Slate 800 */
+  --text-main: #f8fafc;         /* Texto claro Slate 50 */
+  --text-muted: #94a3b8;        /* Texto atenuado Slate 400 */
+  --border-color: #334155;      /* Bordes oscuros Slate 700 */
+}
+
 /* Reset y diseño base */
 * {
   box-sizing: border-box;
@@ -33,14 +46,18 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Header al estilo de acordadas.justucuman.gov.ar (Fondo claro e institucional) */
 header {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   padding: 0.8rem 1.5rem;
   box-shadow: var(--shadow-sm);
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid var(--border-color);
+  transition: var(--transition);
 }
 
 .header-container {
@@ -58,17 +75,24 @@ header {
   align-items: center;
 }
 
-/* Imagen del Logo */
+/* Imagen del Logo original */
 .brand-logo {
   height: 65px;
   width: auto;
   max-width: 100%;
   display: block;
+  transition: var(--transition);
+}
+
+/* En Modo Oscuro, invertimos los colores del logo original (texto oscuro y logo metálico)
+   sobre la transparencia para que contraste correctamente en el encabezado oscuro */
+body.dark-theme .brand-logo {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 @media (max-width: 600px) {
   .brand-logo {
-    height: 50px; /* Reducción de escala para móviles */
+    height: 48px; /* Reducción de escala para móviles */
   }
   .header-container {
     justify-content: center;
@@ -82,7 +106,7 @@ header {
 }
 
 .nav-btn {
-  background: #f8fafc;
+  background: var(--bg-color);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0.5rem 1rem;
@@ -111,7 +135,7 @@ header {
 
 .nav-btn.secondary:hover {
   color: var(--text-main);
-  background: #f1f5f9;
+  background: var(--border-color);
 }
 
 /* Main Layout Centered & Single Column (No sidebar, similar to Acordadas) */
@@ -119,6 +143,7 @@ header {
   max-width: 900px;
   margin: 2.5rem auto;
   padding: 0 1.5rem;
+  flex: 1;
 }
 
 .content-section {
@@ -186,8 +211,8 @@ header {
 }
 
 .tag-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   padding: 0.35rem 0.8rem;
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
@@ -198,7 +223,7 @@ header {
 }
 
 .tag-btn:hover {
-  background: #e2e8f0;
+  background: var(--border-color);
   color: var(--text-main);
 }
 
@@ -381,7 +406,7 @@ header {
 }
 
 .attachment-btn {
-  background: #f8fafc;
+  background: var(--bg-color);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   padding: 0.4rem 0.8rem;
@@ -428,7 +453,7 @@ footer {
   color: #94a3b8;
   padding: 2rem 1.5rem;
   border-top: 3px solid var(--primary-light);
-  margin-top: 6rem;
+  margin-top: auto;
 }
 
 .footer-content {
@@ -474,7 +499,7 @@ footer {
   display: flex;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: 2rem;
-  background: white;
+  background: var(--card-bg);
   padding: 0 1rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -541,7 +566,7 @@ footer {
 
 /* Cards & Panel Layouts */
 .admin-card {
-  background: white;
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 2rem;
@@ -554,7 +579,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.8rem;
 }
 
@@ -595,14 +620,14 @@ footer {
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   color: var(--text-main);
-  background: #f8fafc;
+  background: var(--bg-color);
   transition: var(--transition);
 }
 
 .form-control:focus {
   outline: none;
   border-color: var(--primary-light);
-  background: white;
+  background: var(--card-bg);
   box-shadow: 0 0 0 3px rgba(75, 132, 196, 0.15);
 }
 
@@ -641,13 +666,13 @@ footer {
 }
 
 .action-btn.secondary {
-  background: #f1f5f9;
+  background: var(--bg-color);
   border-color: var(--border-color);
   color: var(--text-main);
 }
 
 .action-btn.secondary:hover {
-  background: #e2e8f0;
+  background: var(--border-color);
 }
 
 /* Admin Tables */
@@ -660,14 +685,14 @@ footer {
 .admin-table th, .admin-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.85rem;
 }
 
 .admin-table th {
-  background: #f8fafc;
+  background: var(--bg-color);
   font-weight: 700;
-  color: var(--primary-color);
+  color: var(--text-main);
 }
 
 .td-title {
@@ -740,14 +765,14 @@ footer {
   list-style: none;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  background: #f8fafc;
+  background: var(--bg-color);
   overflow: hidden;
 }
 
 .category-item {
   border-bottom: 1px solid var(--border-color);
   padding: 0.75rem 1rem;
-  background: white;
+  background: var(--card-bg);
   transition: var(--transition);
 }
 
@@ -846,7 +871,7 @@ footer {
 }
 
 .modal-container {
-  background: white;
+  background: var(--card-bg);
   border-radius: var(--radius-md);
   width: 100%;
   max-width: 600px;
@@ -859,7 +884,7 @@ footer {
 
 .modal-header {
   padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -877,11 +902,11 @@ footer {
 
 .modal-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 0.8rem;
-  background: #f8fafc;
+  background: var(--bg-color);
 }
 
 /* Toast Notifications */
@@ -923,3 +948,156 @@ footer {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   Sección de Manuales e Instructivos
+   ========================================================================== */
+
+/* Pestañas Principales (index.html) */
+.main-nav-tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+}
+
+.main-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.8rem 1.8rem;
+  font-family: var(--font-family) !important;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.main-tab-btn:hover {
+  color: var(--primary-light);
+}
+
+.main-tab-btn.active {
+  color: var(--primary-light);
+  border-bottom-color: var(--primary-light);
+}
+
+.main-tab-content {
+  display: none;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.main-tab-content.active {
+  display: block;
+}
+
+/* Línea de Tiempo (Timeline) para Instructivos */
+.timeline-container {
+  position: relative;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 0;
+}
+
+/* Línea vertical de fondo */
+.timeline-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2rem;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  align-items: flex-start;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Círculo con el número del paso */
+.timeline-badge {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--primary-light);
+  border: 4px solid var(--bg-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.timeline-item:hover .timeline-badge {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+/* Caja de contenido del paso */
+.timeline-content {
+  flex: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.timeline-item:hover .timeline-content {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+.timeline-content h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Ajustes de responsive para móviles */
+@media (max-width: 600px) {
+  .timeline-container::before {
+    left: 1.5rem;
+  }
+  .timeline-item {
+    gap: 1rem;
+  }
+  .timeline-badge {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+    border-width: 3px;
+  }
+  .timeline-content {
+    padding: 1rem;
+  }
+}
+
