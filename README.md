@@ -28,32 +28,18 @@ Para subir la web y poner en funcionamiento el panel de control, seguí estos se
 4. Hacé clic en **Save** (Guardar).
 5. ¡Listo! En menos de 1 minuto GitHub te dará el enlace público de tu sitio en la parte superior (ej: `https://tu-usuario.github.io/novedades-oga/`).
 
----
+## 🔑 Cómo entrar al Panel Administrador
 
-## 🔑 Cómo entrar al Panel Administrador y Configurar tu Token (PAT)
+El panel de administración funciona de forma 100% estática en tu navegador y ya tiene incorporados de manera segura y encriptada los accesos a tu repositorio.
 
-El administrador de la web no requiere instalar nada en tu computadora, ni configurar servidores o bases de datos complejas. Funciona 100% en tu navegador y se conecta de forma segura con tu repositorio.
+### Credenciales de Acceso por Defecto:
+1. Accedé a tu web agregando `/admin/` al final de la URL (ejemplo: `https://tu-usuario.github.io/novedades/admin/`).
+2. Se te presentará una pantalla de inicio de sesión.
+3. Ingresá la contraseña de administrador establecida:
+   * **Contraseña:** `concepcion2026`
+4. Hacé clic en **"Iniciar Sesión"**.
 
-### Paso 1: Generar tu Clave de Escritura (Token PAT)
-Para que el panel pueda escribir en tu repositorio, GitHub requiere que generes una clave personal temporal:
-1. En GitHub.com, hacé clic en tu foto de perfil arriba a la derecha e ingresá a **Settings** (Configuración).
-2. Bajá en el menú de la izquierda al final y hacé clic en **"Developer Settings"**.
-3. Seleccioná **"Personal access tokens"** -> **"Tokens (classic)"**.
-4. Hacé clic en el botón **"Generate new token"** -> **"Generate new token (classic)"**.
-5. Colocá una descripción en *Note* (ej: `Panel Novedades OGA`).
-6. En la lista de permisos, marcá la primera casilla **"repo"** completa (esto da permiso de subir archivos al repositorio).
-7. Hacé clic abajo de todo en **"Generate token"**.
-8. **Copiá el código generado** (comienza con `ghp_`). *Guardalo bien ya que GitHub no lo vuelve a mostrar.*
-
-### Paso 2: Configurar el Administrador
-1. Entrá a tu web agregando `/admin/` al final de la URL (ejemplo: `https://tu-usuario.github.io/novedades-oga/admin/`).
-2. En la pestaña de **Credenciales de Conexión**, completá los datos:
-   - **Usuario:** Tu nombre de usuario de GitHub.
-   - **Repositorio:** El nombre exacto que le pusiste al repositorio (ej: `novedades-oga`).
-   - **Token (PAT):** Pegá la clave que generaste en el paso anterior.
-3. Hacé clic en **"Conectar y Validar Repositorio"**. 
-
-El sistema validará tus credenciales y quedará conectado de forma permanente en ese navegador (no tendrás que volver a introducirlas). Las pestañas de **Novedades** y **Categorías** quedarán desbloqueadas.
+El sistema validará de forma segura las claves encriptadas conectándose directamente con la API de GitHub. Al validar con éxito, las secciones de **Gestión de Novedades** y **Categorías de Filtros** quedarán desbloqueadas de manera inmediata. La sesión durará activa en tu navegador hasta que cierres la pestaña o hagas clic en *"Salir del Panel"*.
 
 ---
 

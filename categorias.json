@@ -1,10 +1,16 @@
 {
   "categorias": [
     {
-      "nombre": "Area Postulatoria"
+      "nombre": "Procedimientos"
     },
     {
-      "nombre": "Area Monitoria"
+      "nombre": "Resoluciones"
+    },
+    {
+      "nombre": "Instructivos"
+    },
+    {
+      "nombre": "Avisos Urgentes"
     }
   ]
 }

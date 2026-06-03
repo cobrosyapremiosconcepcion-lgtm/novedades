@@ -1,8 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Variables Globales ---
-  let gitToken = localStorage.getItem('oga_git_token') || '';
-  let gitUser = localStorage.getItem('oga_git_user') || '';
-  let gitRepo = localStorage.getItem('oga_git_repo') || '';
+  // --- Credenciales Encriptadas (Suministradas por el usuario) ---
+  const ENC_USER = "AAAMEQoDGggfHFddW1kQDAENBhUTCgYBXB1eURcC";
+  const ENC_REPO = "DQAYBgERBwwc";
+  const ENC_PAT = "BAcePFNAAFkFKQVHawUgWhoBKQYCCFtZSEpLcjAjBgomKlAaVgBfWQ==";
+
+  // --- Variables de Sesión Desencriptadas ---
+  let gitToken = '';
+  let gitUser = '';
+  let gitRepo = '';
 
   let newsData = [];
   let categoriesData = [];
@@ -15,14 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
-  // Configuración de Credenciales
-  const configForm = document.getElementById('config-form');
-  const tokenInput = document.getElementById('token-input');
-  const userInput = document.getElementById('user-input');
-  const repoInput = document.getElementById('repo-input');
+  // Login
+  const loginContainer = document.getElementById('login-container');
+  const loginForm = document.getElementById('login-form');
+  const adminPasswordInput = document.getElementById('admin-password');
+
+  // Dashboard General
+  const dashboardContainer = document.getElementById('dashboard-container');
   const connStatus = document.getElementById('connection-status');
   const btnDisconnect = document.getElementById('btn-disconnect');
-  const configWarning = document.getElementById('config-warning');
 
   // Novedades
   const newsTableBody = document.getElementById('news-table-body');
@@ -42,7 +48,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
 
-  // --- Helpers de Codificación Unicode/UTF-8 Base64 ---
+  // --- Helpers de Cifrado Simétrico XOR (Cliente-Servidor) ---
+  function xorCipher(text, key) {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return result;
+  }
+
+  function decrypt(base64Text, key) {
+    try {
+      const binary = atob(base64Text.replace(/\s/g, ''));
+      return xorCipher(binary, key);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // --- Helpers de Codificación Unicode/UTF-8 Base64 para GitHub API ---
   function b64EncodeUnicode(str) {
     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
       return String.fromCharCode(parseInt(p1, 16));
@@ -50,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function b64DecodeUnicode(str) {
-    // Elimina espacios o saltos de línea del string base64 antes de decodificar
     const cleanedStr = str.replace(/\s/g, '');
     return decodeURIComponent(atob(cleanedStr).split('').map(c => {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -66,44 +89,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4000);
   }
 
-  // --- Lógica de Credenciales y Conexión GitHub ---
-  function updateCredsUI() {
-    if (gitToken && gitUser && gitRepo) {
-      tokenInput.value = gitToken;
-      userInput.value = gitUser;
-      repoInput.value = gitRepo;
-      connStatus.className = 'connection-badge success';
-      connStatus.textContent = 'Conectado a GitHub';
-      btnDisconnect.style.display = 'inline-block';
-      if (configWarning) configWarning.style.display = 'none';
-      
-      // Habilitar pestañas
-      tabButtons.forEach(btn => {
-        if (btn.getAttribute('data-tab') !== 'creds') btn.removeAttribute('disabled');
-      });
-      
-      loadDashboardData();
-    } else {
-      tokenInput.value = '';
-      userInput.value = '';
-      repoInput.value = '';
-      connStatus.className = 'connection-badge danger';
-      connStatus.textContent = 'Desconectado';
-      btnDisconnect.style.display = 'none';
-      if (configWarning) configWarning.style.display = 'block';
-      
-      // Deshabilitar pestañas excepto credenciales
-      tabButtons.forEach(btn => {
-        if (btn.getAttribute('data-tab') !== 'creds') btn.setAttribute('disabled', 'true');
-      });
-      switchTab('creds');
-      
-      newsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Configure sus credenciales de GitHub para ver las novedades.</td></tr>';
-      categoriesList.innerHTML = '<li class="list-empty">Configure sus credenciales para ver las categorías.</li>';
-    }
+  // --- Gestión de Sesión de Login ---
+
+  // Mostrar el Dashboard y cargar datos
+  function showDashboard() {
+    loginContainer.style.display = 'none';
+    dashboardContainer.style.display = 'block';
+    
+    connStatus.className = 'connection-badge success';
+    connStatus.textContent = 'Conectado';
+    btnDisconnect.style.display = 'inline-block';
+    
+    loadDashboardData();
   }
 
-  // Verificar conexión real con GitHub
+  // Ocultar Dashboard y pedir contraseña
+  function hideDashboard() {
+    loginContainer.style.display = 'block';
+    dashboardContainer.style.display = 'none';
+    
+    connStatus.className = 'connection-badge danger';
+    connStatus.textContent = 'Desconectado';
+    btnDisconnect.style.display = 'none';
+    adminPasswordInput.value = '';
+  }
+
+  // Validar credenciales haciendo consulta rápida a la API de GitHub
   async function testGitHubConnection(token, user, repo) {
     try {
       const response = await fetch(`https://api.github.com/repos/${user}/${repo}`, {
@@ -118,48 +129,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Guardar credenciales al enviar formulario
-  configForm.addEventListener('submit', async (e) => {
+  // Formulario de Login
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const token = tokenInput.value.trim();
-    const user = userInput.value.trim();
-    const repo = repoInput.value.trim();
+    const password = adminPasswordInput.value.trim();
 
-    if (!token || !user || !repo) {
-      showToast('Por favor, complete todos los campos de configuración.', true);
+    if (!password) {
+      showToast('Por favor, ingrese la contraseña de acceso.', true);
       return;
     }
 
-    showToast('Verificando conexión con el repositorio...');
+    showToast('Validando credenciales en GitHub...');
 
-    const isConnected = await testGitHubConnection(token, user, repo);
+    // Desencriptar localmente usando la contraseña como llave
+    const decryptedUser = decrypt(ENC_USER, password);
+    const decryptedRepo = decrypt(ENC_REPO, password);
+    const decryptedPat = decrypt(ENC_PAT, password);
+
+    // Validar token desencriptado contra la API
+    const isConnected = await testGitHubConnection(decryptedPat, decryptedUser, decryptedRepo);
 
     if (isConnected) {
-      gitToken = token;
-      gitUser = user;
-      gitRepo = repo;
-      localStorage.setItem('oga_git_token', token);
-      localStorage.setItem('oga_git_user', user);
-      localStorage.setItem('oga_git_repo', repo);
-      showToast('¡Conectado con éxito a GitHub!');
-      updateCredsUI();
-      switchTab('news'); // Ir a novedades al conectarse
+      gitToken = decryptedPat;
+      gitUser = decryptedUser;
+      gitRepo = decryptedRepo;
+
+      // Guardar sesión en sessionStorage (se borra al cerrar la pestaña)
+      sessionStorage.setItem('oga_admin_logged', 'true');
+      sessionStorage.setItem('oga_admin_password', password);
+
+      showToast('¡Sesión iniciada con éxito!');
+      showDashboard();
     } else {
-      showToast('Error de conexión. Verifique el Token, el Usuario o el nombre del Repositorio.', true);
+      showToast('Contraseña de administrador incorrecta o sin acceso a internet.', true);
+      adminPasswordInput.value = '';
+      adminPasswordInput.focus();
     }
   });
 
-  // Desconectar / Limpiar credenciales
+  // Botón Salir
   btnDisconnect.addEventListener('click', () => {
-    if (confirm('¿Está seguro de que desea borrar sus credenciales? Se eliminarán de este navegador.')) {
+    if (confirm('¿Desea cerrar la sesión de administración?')) {
       gitToken = '';
       gitUser = '';
       gitRepo = '';
-      localStorage.removeItem('oga_git_token');
-      localStorage.removeItem('oga_git_user');
-      localStorage.removeItem('oga_git_repo');
-      showToast('Credenciales eliminadas.');
-      updateCredsUI();
+      sessionStorage.removeItem('oga_admin_logged');
+      sessionStorage.removeItem('oga_admin_password');
+      showToast('Sesión cerrada.');
+      hideDashboard();
     }
   });
 
@@ -206,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resData = await response.json();
-    return resData.content.sha; // Retorna el nuevo sha del archivo
+    return resData.content.sha;
   }
 
   // --- Cargar datos en el Dashboard ---
@@ -215,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
     categoriesList.innerHTML = '<li class="list-empty">Cargando categorías...</li>';
 
     try {
-      // Cargar archivos en paralelo
       const [newsFile, categoriesFile] = await Promise.all([
         fetchFile('noticias.json'),
         fetchFile('categorias.json')
@@ -236,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (e) {
       console.error(e);
-      showToast('Error al descargar los datos desde GitHub. Verifique el repositorio.', true);
+      showToast('Error de sincronización con GitHub.', true);
       newsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ef4444;">Error al cargar novedades.</td></tr>';
       categoriesList.innerHTML = '<li class="list-empty" style="color: #ef4444;">Error al cargar categorías.</li>';
     }
@@ -254,13 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newsData.forEach((item, index) => {
       const tr = document.createElement('tr');
-      
       const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' };
       const formattedDate = new Date(item.fecha).toLocaleDateString('es-AR', dateOptions);
 
       tr.innerHTML = `
         <td class="td-title"><strong>${item.titulo}</strong></td>
-        <td><span class="table-badge">${item.categoria}</span></td>
+        <td><span class="table-badge">${item.categoria || 'Novedad'}</span></td>
         <td>${formattedDate}</td>
         <td class="table-actions">
           <button class="action-btn edit-btn" data-index="${index}">Editar</button>
@@ -270,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
       newsTableBody.appendChild(tr);
     });
 
-    // Agregar manejadores de eventos a botones
     newsTableBody.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const index = parseInt(e.currentTarget.getAttribute('data-index'));
@@ -314,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
       categoriesList.appendChild(li);
     });
 
-    // Vincular eventos de categorías
     categoriesList.querySelectorAll('.cat-edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const li = e.currentTarget.closest('.category-item');
@@ -371,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (index === null) {
       modalTitle.textContent = 'Nueva Novedad';
       newsForm.reset();
-      // Poner fecha de hoy por defecto en formato YYYY-MM-DD
       document.getElementById('news-date').value = new Date().toISOString().substring(0, 10);
     } else {
       modalTitle.textContent = 'Editar Novedad';
@@ -426,37 +438,27 @@ document.addEventListener('DOMContentLoaded', () => {
     closeNewsModal();
 
     try {
-      // 1. Obtener la última versión del archivo desde GitHub para evitar conflictos de SHA
       const freshFile = await fetchFile('noticias.json');
       let currentNews = freshFile.jsonData.novedades || [];
 
       if (editingNewsIndex === null) {
-        // Crear
         currentNews.push(payload);
         commitMsg = `Añadir novedad: "${title}"`;
       } else {
-        // Editar. Para asegurar el índice correcto, buscamos por coincidencia en noticias ordenadas
-        // o mapeamos el índice local al del archivo fresco.
-        // La mejor manera es usar un identificador, pero dado que el JSON original no tiene ID,
-        // utilizaremos la correspondencia de posición en el array ordenado.
-        
-        // Primero ordenamos el array fresco para que coincida con nuestra representación local
         currentNews.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
         currentNews[editingNewsIndex] = payload;
         commitMsg = `Editar novedad: "${title}"`;
       }
 
-      // 2. Guardar en GitHub
       newsSha = await saveFile('noticias.json', { novedades: currentNews }, freshFile.sha, commitMsg);
       
-      // 3. Actualizar estado local y renderizar
       newsData = currentNews;
       renderNewsTable();
-      showToast('¡Novedad publicada con éxito en tu repositorio!');
+      showToast('¡Novedad publicada con éxito!');
 
     } catch (error) {
       console.error(error);
-      showToast('Error al guardar la novedad en GitHub.', true);
+      showToast('Error al guardar en GitHub.', true);
     }
   });
 
@@ -470,27 +472,20 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Eliminando novedad en GitHub...');
 
     try {
-      // 1. Obtener última versión del archivo
       const freshFile = await fetchFile('noticias.json');
       let currentNews = freshFile.jsonData.novedades || [];
-      
-      // Ordenar fresca de igual manera para que coincida el índice
       currentNews.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-      
-      // Quitar elemento
       currentNews.splice(index, 1);
 
-      // 2. Guardar
       newsSha = await saveFile('noticias.json', { novedades: currentNews }, freshFile.sha, `Eliminar novedad: "${item.titulo}"`);
       
-      // 3. Renderizar local
       newsData = currentNews;
       renderNewsTable();
       showToast('Novedad eliminada con éxito.');
 
     } catch (e) {
       console.error(e);
-      showToast('Error al eliminar la novedad en GitHub.', true);
+      showToast('Error al eliminar en GitHub.', true);
     }
   }
 
@@ -503,7 +498,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!catName) return;
 
-    // Evitar duplicados
     const exists = categoriesData.some(cat => cat.nombre.toLowerCase() === catName.toLowerCase());
     if (exists) {
       showToast('Esta categoría ya existe.', true);
@@ -514,16 +508,12 @@ document.addEventListener('DOMContentLoaded', () => {
     newCategoryInput.value = '';
 
     try {
-      // 1. Obtener versión fresca de categorías
       const freshFile = await fetchFile('categorias.json');
       let currentCats = freshFile.jsonData.categorias || [];
-
       currentCats.push({ nombre: catName });
 
-      // 2. Guardar en GitHub
       categoriesSha = await saveFile('categorias.json', { categorias: currentCats }, freshFile.sha, `Añadir categoría: "${catName}"`);
 
-      // 3. Sincronizar local
       categoriesData = currentCats;
       renderCategoriesList();
       renderCategorySelect();
@@ -535,15 +525,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Modificar/Editar Categoría Existente (con Integridad de Datos)
+  // Modificar Categoría
   async function editCategoryItem(index, newName) {
     const oldName = categoriesData[index].nombre;
     if (oldName === newName) {
-      renderCategoriesList(); // Reset view
+      renderCategoriesList();
       return;
     }
 
-    // Evitar duplicar nombre
     const exists = categoriesData.some((cat, i) => i !== index && cat.nombre.toLowerCase() === newName.toLowerCase());
     if (exists) {
       showToast('Ya existe otra categoría con este nombre.', true);
@@ -553,12 +542,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Modificando categoría...');
 
     try {
-      // 1. Obtener versión fresca de categorías
       const freshCatsFile = await fetchFile('categorias.json');
       let currentCats = freshCatsFile.jsonData.categorias || [];
       currentCats[index] = { nombre: newName };
 
-      // 2. Comprobar si hay noticias asociadas que debamos actualizar (integridad de datos)
       const freshNewsFile = await fetchFile('noticias.json');
       let currentNews = freshNewsFile.jsonData.novedades || [];
       let updatedNewsCount = 0;
@@ -570,10 +557,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // 3. Guardar categorías en GitHub
       categoriesSha = await saveFile('categorias.json', { categorias: currentCats }, freshCatsFile.sha, `Modificar categoría de "${oldName}" a "${newName}"`);
 
-      // 4. Si se actualizaron noticias, guardarlas también
       if (updatedNewsCount > 0) {
         showToast(`Actualizando ${updatedNewsCount} novedades asociadas...`);
         newsSha = await saveFile('noticias.json', { novedades: currentNews }, freshNewsFile.sha, `Actualizar categoría "${oldName}" a "${newName}" en novedades`);
@@ -581,7 +566,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderNewsTable();
       }
 
-      // 5. Sincronizar local
       categoriesData = currentCats;
       renderCategoriesList();
       renderCategorySelect();
@@ -597,11 +581,10 @@ document.addEventListener('DOMContentLoaded', () => {
   async function deleteCategoryItem(index) {
     const catName = categoriesData[index].nombre;
 
-    // Verificar si hay novedades usando esta categoría
     const inUse = newsData.some(item => item.categoria === catName);
     let msg = `¿Está seguro de que desea eliminar la categoría: "${catName}"?`;
     if (inUse) {
-      msg = `ATENCIÓN: Hay novedades publicadas que usan la categoría "${catName}". Si la elimina, esas novedades quedarán sin categoría (se les asignará una por defecto). ¿Desea continuar?`;
+      msg = `ATENCIÓN: Hay novedades publicadas que usan la categoría "${catName}". Si la elimina, esas novedades quedarán sin categoría. ¿Desea continuar?`;
     }
 
     if (!confirm(msg)) return;
@@ -609,35 +592,30 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Eliminando categoría...');
 
     try {
-      // 1. Obtener versión fresca de categorías
       const freshCatsFile = await fetchFile('categorias.json');
       let currentCats = freshCatsFile.jsonData.categorias || [];
       currentCats.splice(index, 1);
 
-      // 2. Quitar o reasignar la categoría en las noticias
       const freshNewsFile = await fetchFile('noticias.json');
       let currentNews = freshNewsFile.jsonData.novedades || [];
       let updatedNewsCount = 0;
 
       currentNews.forEach(item => {
         if (item.categoria === catName) {
-          item.categoria = ''; // Queda vacía y el frontend le asigna "Novedad"
+          item.categoria = '';
           updatedNewsCount++;
         }
       });
 
-      // 3. Guardar categorías
       categoriesSha = await saveFile('categorias.json', { categorias: currentCats }, freshCatsFile.sha, `Eliminar categoría: "${catName}"`);
 
-      // 4. Guardar noticias actualizadas si corresponde
       if (updatedNewsCount > 0) {
         showToast(`Removiendo categoría en ${updatedNewsCount} novedades...`);
-        newsSha = await saveFile('noticias.json', { novedades: currentNews }, freshNewsFile.sha, `Remover categoría "${catName}" eliminada de las novedades`);
+        newsSha = await saveFile('noticias.json', { novedades: currentNews }, freshNewsFile.sha, `Remover categoría "${catName}" de novedades`);
         newsData = currentNews;
         renderNewsTable();
       }
 
-      // 5. Sincronizar local
       categoriesData = currentCats;
       renderCategoriesList();
       renderCategorySelect();
@@ -671,15 +649,26 @@ document.addEventListener('DOMContentLoaded', () => {
   tabButtons.forEach(button => {
     button.addEventListener('click', (e) => {
       const tabId = e.currentTarget.getAttribute('data-tab');
-      // No permitir entrar a otras pestañas si no hay conexión activa
-      if (tabId !== 'creds' && (!gitToken || !gitUser || !gitRepo)) {
-        showToast('Debe configurar sus credenciales antes de continuar.', true);
-        return;
-      }
       switchTab(tabId);
     });
   });
 
-  // --- Inicialización ---
-  updateCredsUI();
+  // --- Inicialización y Chequeo de Sesión ---
+  const isLogged = sessionStorage.getItem('oga_admin_logged') === 'true';
+  const savedPassword = sessionStorage.getItem('oga_admin_password') || '';
+
+  if (isLogged && savedPassword) {
+    // Intentar desencriptar y verificar sesión automáticamente al recargar
+    gitUser = decrypt(ENC_USER, savedPassword);
+    gitRepo = decrypt(ENC_REPO, savedPassword);
+    gitToken = decrypt(ENC_PAT, savedPassword);
+
+    if (gitToken && gitUser && gitRepo) {
+      showDashboard();
+    } else {
+      hideDashboard();
+    }
+  } else {
+    hideDashboard();
+  }
 });

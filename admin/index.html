@@ -24,114 +24,99 @@
     </div>
   </header>
 
-  <!-- Contenido del Dashboard -->
+  <!-- Cuerpo Principal (Login o Dashboard) -->
   <main class="main-wrapper">
     
-    <!-- Barra de Pestañas -->
-    <nav class="admin-nav-bar">
-      <button class="tab-btn active" data-tab="creds">🔑 Credenciales de Conexión</button>
-      <button class="tab-btn" data-tab="news" disabled>📰 Novedades Publicadas</button>
-      <button class="tab-btn" data-tab="categories" disabled>🏷️ Categorías de Filtros</button>
-    </nav>
-
-    <!-- Pestaña 1: Credenciales -->
-    <section id="creds-tab" class="tab-content active">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <h2>Configuración de Conexión a GitHub</h2>
-        </div>
-        
-        <div id="config-warning" class="warning-box">
-          <strong>Atención:</strong> Para poder publicar y gestionar las novedades de la web de forma gratuita, debe configurar las credenciales de su repositorio de GitHub. Los datos se guardan de forma local y segura en su navegador.
-        </div>
-
-        <form id="config-form">
-          <div class="form-group">
-            <label for="user-input">Usuario de GitHub (Propietario del Repositorio)</label>
-            <input type="text" id="user-input" class="form-control" placeholder="Ej: mi-usuario-github" required>
-            <p class="form-help">Tu nombre de usuario de GitHub.</p>
-          </div>
-          <div class="form-group">
-            <label for="repo-input">Nombre del Repositorio</label>
-            <input type="text" id="repo-input" class="form-control" placeholder="Ej: oga-novedades" required>
-            <p class="form-help">El nombre del repositorio donde subiste la web.</p>
-          </div>
-          <div class="form-group">
-            <label for="token-input">GitHub Personal Access Token (PAT)</label>
-            <input type="password" id="token-input" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
-            <p class="form-help">Token con permisos de escritura (alcance <code>repo</code> o <code>public_repo</code>) generado en GitHub.com.</p>
-          </div>
-          <button type="submit" class="action-btn">Conectar y Validar Repositorio</button>
-        </form>
+    <!-- Contenedor del Login (Se muestra por defecto) -->
+    <div id="login-container" class="admin-card" style="max-width: 450px; margin: 4rem auto; display: block; border-top: 4px solid var(--primary-light);">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 0.3rem;">Acceso al Panel</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">OGA de Cobros y Apremios Concepción</p>
       </div>
       
-      <div class="admin-card">
-        <h2>¿Cómo generar tu Token de Acceso (PAT)?</h2>
-        <div style="margin-top: 1rem; font-size: 0.9rem;">
-          <ol style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <li>Iniciá sesión en <strong>GitHub.com</strong>.</li>
-            <li>Hacé clic en tu foto de perfil arriba a la derecha e ingresá a <strong>Settings</strong> (Configuración).</li>
-            <li>En el menú de la izquierda, navegá hasta el fondo y hacé clic en <strong>Developer Settings</strong>.</li>
-            <li>Seleccioná <strong>Personal access tokens</strong> -> <strong>Tokens (classic)</strong>.</li>
-            <li>Hacé clic en <strong>Generate new token</strong> -> <strong>Generate new token (classic)</strong>.</li>
-            <li>Colocale una nota identificatoria (ej: <code>Panel OGA</code>) y marcá la casilla de verificación <strong>repo</strong> completa (o <code>public_repo</code> si tu repositorio es público).</li>
-            <li>Hacé clic en <strong>Generate token</strong> al final de la página y copiá el código generado (empieza con <code>ghp_</code>). <em>¡No lo pierdas porque no se vuelve a mostrar!</em></li>
-          </ol>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="admin-password">Contraseña de Administrador</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="Ingrese la clave de acceso..." required>
         </div>
-      </div>
-    </section>
+        <button type="submit" class="action-btn" style="width: 100%; padding: 0.75rem;">Iniciar Sesión</button>
+      </form>
+    </div>
 
-    <!-- Pestaña 2: Novedades -->
-    <section id="news-tab" class="tab-content">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <h2>Gestión de Novedades de la OGA</h2>
-          <button id="btn-add-news" class="action-btn">＋ Agregar Novedad</button>
+    <!-- Contenedor del Dashboard (Oculto por defecto hasta loguearse) -->
+    <div id="dashboard-container" style="display: none;">
+      
+      <!-- Barra de Pestañas -->
+      <nav class="admin-nav-bar">
+        <button class="tab-btn active" data-tab="news">📰 Novedades Publicadas</button>
+        <button class="tab-btn" data-tab="categories">🏷️ Categorías de Filtros</button>
+      </nav>
+
+      <!-- Pestaña: Novedades -->
+      <section id="news-tab" class="tab-content active">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Gestión de Novedades de la OGA</h2>
+            <button id="btn-add-news" class="action-btn">＋ Agregar Novedad</button>
+          </div>
+          
+          <div style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Categoría</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="news-table-body">
+                <!-- Renderizado por js/admin.js -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        
-        <div style="overflow-x: auto;">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Título</th>
-                <th>Categoría</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="news-table-body">
+      </section>
+
+      <!-- Pestaña: Categorías -->
+      <section id="categories-tab" class="tab-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Configuración de Filtros (Categorías)</h2>
+          </div>
+          
+          <div class="warning-box" style="background: #e0f2fe; border-color: #bae6fd; border-left-color: #0284c7; color: #0369a1;">
+            <strong>Integridad de datos activa:</strong> Si modificás el nombre de una categoría existente, el sistema buscará todas las novedades publicadas y actualizará automáticamente su categoría para evitar que queden desvinculadas.
+          </div>
+
+          <div class="categories-container">
+            <form id="add-category-form" class="add-category-box">
+              <input type="text" id="new-category-input" class="form-control" placeholder="Ej: Acordadas" required>
+              <button type="submit" class="action-btn">＋ Añadir Categoría</button>
+            </form>
+
+            <ul id="categories-list" class="categories-list-ul">
               <!-- Renderizado por js/admin.js -->
-            </tbody>
-          </table>
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Pestaña 3: Categorías -->
-    <section id="categories-tab" class="tab-content">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <h2>Configuración de Filtros (Categorías)</h2>
-        </div>
-        
-        <div class="warning-box" style="background: #e0f2fe; border-color: #bae6fd; border-left-color: #0284c7; color: #0369a1;">
-          <strong>Integridad de datos activa:</strong> Si modificás el nombre de una categoría existente, el sistema buscará todas las novedades publicadas y actualizará automáticamente su categoría para evitar que queden desvinculadas.
-        </div>
-
-        <div class="categories-container">
-          <form id="add-category-form" class="add-category-box">
-            <input type="text" id="new-category-input" class="form-control" placeholder="Ej: Acordadas" required>
-            <button type="submit" class="action-btn">＋ Añadir Categoría</button>
-          </form>
-
-          <ul id="categories-list" class="categories-list-ul">
-            <!-- Renderizado por js/admin.js -->
-          </ul>
-        </div>
-      </div>
-    </section>
-
+    </div>
   </main>
+
+  <!-- Pie de Página -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h2>Poder Judicial de Tucumán</h2>
+        <p>Oficina de Gestión Asociada de Cobros y Apremios Concepcion</p>
+      </div>
+      <div class="footer-copy">
+        &copy; 2026 OGA Cobros y Apremios. Todos los derechos reservados.
+      </div>
+    </div>
+  </footer>
 
   <!-- Modal para Agregar/Editar Novedades -->
   <div id="news-modal" class="modal-overlay">
