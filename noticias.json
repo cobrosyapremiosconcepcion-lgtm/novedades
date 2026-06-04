@@ -1,3 +1,13 @@
 {
-  "novedades": []
+  "novedades": [
+    {
+      "titulo": "Nulidad Monitorio",
+      "fecha": "2026-06-04",
+      "categoria": "Procedimientos",
+      "resumen": "Plazo de planteo de Nulidad en un Juicio Monitorio",
+      "contenido": "El plazo de Nulidad previsto por el código según el art. 593 del CPCCT es de 10 días para los juicios monitorios.\n\nCaso Ejemplo: 2205/26",
+      "adjunto_nombre": "",
+      "adjunto_url": ""
+    }
+  ]
 }
