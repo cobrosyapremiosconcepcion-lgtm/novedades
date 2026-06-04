@@ -17,6 +17,15 @@
       "contenido": "###1. De oficio\nSi el decreto fue dictado de oficio por el juez o a pedido de la parte fue interpuesto el recurso de revocatoria: ***NO SE SUSTANCIA***\n\n###2. A pedido de las partes:\nSi el decreto surge del pedido de una de las partes y la otra no esta de acuerdo puede interponer recurso de revocatoria: ***SE SUSTANCIA***",
       "adjunto_nombre": "",
       "adjunto_url": ""
+    },
+    {
+      "titulo": "Recurso de Revocatoria",
+      "fecha": "2026-06-04",
+      "categoria": "Procedimientos",
+      "resumen": "Sustanciación del recurso de revocatoria",
+      "contenido": "###1. De oficio###\nSi el decreto fue dictado de oficio por el juez o a pedido de la parte fue interpuesto el recurso de revocatoria: *NO SE SUSTANCIA*\n\n###2. A pedido de las partes:\nSi el decreto surge del pedido de una de las partes y la otra no esta de acuerdo puede interponer recurso de revocatoria: *SE SUSTANCIA*",
+      "adjunto_nombre": "",
+      "adjunto_url": ""
     }
   ]
 }
