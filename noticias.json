@@ -1,13 +1,3 @@
 {
-  "novedades": [
-    {
-      "titulo": "Aviso: Horarios de atención presencial y canales de consulta digital",
-      "fecha": "2026-05-10",
-      "categoria": "Avisos Urgentes",
-      "resumen": "Informamos los canales oficiales para consultas de trámites presenciales e inicio de trámites de apremio.",
-      "contenido": "Debido a las tareas de mantenimiento y modernización del sistema informático de la OGA de Cobros y Apremios, se recuerdan los canales de comunicación vigentes:\n\n* **Atención presencial:** Lunes a Viernes de 7:30 a 12:30 hs en la mesa de entradas física (Centro Judicial Concepción).\n* **Consultas telefónicas:** Interno 4455 / 4456 en el horario judicial.\n* **Correo electrónico institucional:** ogacobrosapremios@justucuman.gov.ar\n\nRecomendamos priorizar los trámites a través del portal de notificaciones electrónicas para una respuesta más rápida.",
-      "adjunto_nombre": "",
-      "adjunto_url": ""
-    }
-  ]
+  "novedades": []
 }
