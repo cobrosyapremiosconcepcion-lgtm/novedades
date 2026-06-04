@@ -1,15 +1,6 @@
 {
   "novedades": [
     {
-      "titulo": "Implementación del nuevo Portal del Expediente Digital OGA",
-      "fecha": "2026-05-31",
-      "categoria": "Procedimientos",
-      "resumen": "A partir del 1 de junio, todas las presentaciones de demandas de apremio y cobros fiscales deberán realizarse exclusivamente a través del nuevo portal digital.",
-      "contenido": "Nos complace informar que la Oficina de Gestión Asociada (OGA) de Cobros y Apremios del Centro Judicial Concepción inicia su transición definitiva al expediente 100% digital. Esta medida busca agilizar el servicio de justicia y reducir los tiempos administrativos.\n\n### Puntos clave del nuevo sistema:\n* **Presentación de Demandas:** Exclusivo a través de la Mesa de Entradas Virtual (MEV).\n* **Firmas Digitales:** Todos los escritos de apremio deben contar con firma digital válida de los apoderados fiscales.\n* **Notificaciones:** Las notificaciones electrónicas al domicilio constituido se realizarán los días martes y viernes automáticamente.\n\nSe recuerda a los litigantes que los expedientes en trámite serán migrados paulatinamente.",
-      "adjunto_nombre": "Guía de Presentación Digital.pdf",
-      "adjunto_url": "https://www.justucuman.gov.ar/files/guia_presentacion.pdf"
-    },
-    {
       "titulo": "Nueva planilla de liquidación de tasas de justicia y recargos",
       "fecha": "2026-05-20",
       "categoria": "Instructivos",
