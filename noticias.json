@@ -26,6 +26,15 @@
       "contenido": "Modelo de decreto decretando la inconstitucionalidad cuando la parte actora pierde el juicio.\n\nExpte Ejemplo: **16351/24**",
       "adjunto_nombre": "",
       "adjunto_url": ""
+    },
+    {
+      "titulo": "Presentacion de Tercero en Juicio Monitorio",
+      "fecha": "2026-06-05",
+      "categoria": "Monitorio",
+      "resumen": "Se presenta un tercero en el proceso Art. 48 (monitorio)",
+      "contenido": "Cuando se presenta un tercero en un juicio monitorio se debe proceder según lo dispone el art. 48 del Codigo Procesal: \"...No procede la intervención de terceros en el proceso monitorio y en el\njuicio ejecutivo.\"\n\nEsto es para los juicios de la Dra. Torres, los del Juez Iriarte es necesario evacuar la consulta con él.\n\nEjemplos: 2198/26, 5926/26, 2251/26",
+      "adjunto_nombre": "2198/26",
+      "adjunto_url": ""
     }
   ]
 }
