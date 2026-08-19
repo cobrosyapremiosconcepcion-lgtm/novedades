@@ -27,6 +27,44 @@
           "descripcion": "Generar la vista previa en formato PDF para constatar la ausencia de errores materiales. Una vez confirmado, enviar el mandamiento a la bandeja del juez para su firma digital."
         }
       ]
+    },
+    {
+      "id": "1787155448518",
+      "titulo": "Pase a resolver",
+      "descripcion": "Guia de pasos para el pase a resolver",
+      "fecha": "2026-08-19",
+      "pasos": [
+        {
+          "numero": 1,
+          "titulo": "Verificar Solicitud",
+          "descripcion": "Verificar la solicitud de la parte: Constatar que la actora haya solicitado expresamente en el expediente el pase a resolver."
+        },
+        {
+          "numero": 2,
+          "titulo": "Revisar constancia de ARCA:",
+          "descripcion": "No la acompaña: Emitir Decreto 030 (solicitar constancia de ARCA).\nSí la acompaña: Avanzar al siguiente control."
+        },
+        {
+          "numero": 3,
+          "titulo": "Controlar la planilla fiscal:",
+          "descripcion": "No está practicada: Emitir Decreto 009 (practicar planilla fiscal).\nSí está practicada: Avanzar al siguiente control."
+        },
+        {
+          "numero": 4,
+          "titulo": "Verificar notificación y firmeza del mandamiento:",
+          "descripcion": "No está bien notificado o falta firmeza: Revisar las cédulas de notificación y el cómputo de plazos.\n\nEstá notificado y firme: Confeccionar y proveer el Decreto 018 (Corresponde pase a resolver)."
+        },
+        {
+          "numero": 5,
+          "titulo": "Tramite",
+          "descripcion": "Trámite actual: A la Firma.\n\nResponsable: Juez que corresponda."
+        },
+        {
+          "numero": 6,
+          "titulo": "Tramite Futuro",
+          "descripcion": "Trámite Futuro: Esperando Firmeza.\nObservación Futura: (Fecha de Firmeza - 5 días desde el día siguiente a la firma) + S/Excepciones o C/Excepciones.\n\nResponsable Futuro: \n- mgnacul (juicios de la Dra. Torres) \n- nrocchio (juicios del Dr. Iriarte)."
+        }
+      ]
     }
   ]
 }
